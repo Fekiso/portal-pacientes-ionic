@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "PortalPacientesIonic",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

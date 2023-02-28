@@ -1,0 +1,8 @@
+{
+  "name": "PortalPacientesIonic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react",
+  "id": "812ad92b"
+}
