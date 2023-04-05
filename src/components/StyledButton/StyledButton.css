@@ -1,0 +1,27 @@
+ion-button {
+  /* --margin-top: 10px; */
+  --border-radius: 5px;
+}
+
+ion-button.azul {
+  --color: #ffffff;
+  --background: #186094;
+  --background-hover: #0c324d;
+  --background-focused: #10476e;
+}
+
+ion-button.rojo {
+  --color: #ffffff;
+  --background: #e30202;
+  --background-hover: #8c0101;
+  --background-focused: #c40000;
+}
+
+ion-button.violeta {
+  --color: #ffffff;
+  --padding-start: 40px;
+  --padding-end: 40px; 
+  --background: #aca8e6;
+  --background-hover: #8986b8;
+  --background-focused: #9995cd;
+}

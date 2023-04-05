@@ -1,0 +1,13 @@
+:root {
+  --whiteText: #fff;
+  --primaryFont: "Montserrat", sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.fullSize {
+  width: 100vw;
+  height: 100vh;
+}
