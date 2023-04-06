@@ -5,10 +5,11 @@ import {
   IonModal,
   IonToolbar,
 } from "@ionic/react";
+import axios from "axios";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 
-const NuevoPaciente = () => {
+const NuevoPaciente = ({ openModal }) => {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [correo, setCorreo] = useState("");
@@ -39,10 +40,7 @@ const NuevoPaciente = () => {
     const url = localStorage.getItem("urlAxio");
 
     try {
-      const response = await axios.get(
-        `${url}Pacientes/DocumentoTipoTraer`,
-        config
-      );
+      const response = await axios.get(`${url}Pacientes/DocumentoTipoTraer`);
       if (response.data.length !== 0) {
         tiposDocs = response.data;
       } else {
@@ -68,7 +66,7 @@ const NuevoPaciente = () => {
     const url = localStorage.getItem("urlAxio");
 
     try {
-      const response = await axios.get(`${url}Mutuales`, config);
+      const response = await axios.get(`${url}Mutuales`);
       if (response.data.length !== 0) {
         mutuales = response.data;
       } else {
@@ -92,7 +90,7 @@ const NuevoPaciente = () => {
   useEffect(() => {
     traerTiposDocs();
     traerMutuales();
-  }, []);
+  }, [openModal]);
 
   const handleChangeSelect = (value, select) => {
     switch (select) {
@@ -220,7 +218,7 @@ const NuevoPaciente = () => {
 
   // agregar metodos modal confirmacion y cierre de ventana
   return (
-    <IonModal isOpen={true}>
+    <IonModal isOpen={openModal}>
       <IonHeader>
         <IonToolbar>
           <h3>Registrarme como nuevo paciente</h3>

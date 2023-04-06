@@ -14,7 +14,7 @@ import ExploreContainer from "../../components/ExploreContainer/ExploreContainer
 import Menu from "../../components/Menu/Menu";
 import "./Page.css";
 
-const Page: React.FC = () => {
+const Page = () => {
   const { name } = useParams<{ name: string }>();
 
   return (

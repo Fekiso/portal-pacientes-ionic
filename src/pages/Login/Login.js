@@ -28,6 +28,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import StyledButton from "../../components/StyledButton/StyledButton";
+import NuevoPaciente from "../NuevoPaciente/NuevoPaciente";
 import "./login.css";
 
 const LoginIonic = () => {
@@ -44,8 +45,7 @@ const LoginIonic = () => {
   const [msjErrorPassword, setMsjErrorPassword] = useState("");
   const [cargandoLogin, setCargandoLogin] = useState(false);
   const [registrarPaciente, setRegistrarPaciente] = useState(false);
-  const history = useHistory()
-
+  const history = useHistory();
 
   const handleChangeVisibilityOfPassword = () => {
     setBlnVerPassword(!blnVerPassword);
@@ -113,7 +113,7 @@ const LoginIonic = () => {
           setCargandoLogin(false);
           setUsuario(LoginUsuario);
           sessionStorage.setItem("ppUL", JSON.stringify(LoginUsuario));
-          history.push('/page/')
+          history.push("/page/");
         } else {
           setErrorPassword(true);
           setMsjErrorPassword("Usuario o Password incorrecto");
@@ -152,6 +152,10 @@ const LoginIonic = () => {
     //Reemplazamos los valores no numericos por espacios en blanco
     const filteredValue = value.replace(/[^0-9]+/g, "");
     setUsuario({ usuario: usuario.usuario, password: filteredValue });
+  };
+
+  const handleCloseModalRegistrarPaciente = () => {
+    setRegistrarPaciente(false);
   };
 
   return (
@@ -246,6 +250,7 @@ const LoginIonic = () => {
                 lines="none"
                 fill="clear"
                 className="justify-content-center"
+                onClick={(e) => setRegistrarPaciente(true)}
               >
                 <h5>¿No es paciente?, REGISTRESE</h5>
               </StyledButton>
@@ -253,6 +258,7 @@ const LoginIonic = () => {
           </IonCard>
         </IonCol>
       </IonRow>
+      <NuevoPaciente openModal={registrarPaciente} />
     </IonGrid>
   );
 };
