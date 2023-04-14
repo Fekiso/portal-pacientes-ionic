@@ -182,13 +182,8 @@ const LoginIonic = () => {
                     id="btnHelpNrodocumento"
                     size="small"
                   />
-                  <IonPopover
-                    trigger="btnHelpNrodocumento"
-                    triggerAction="click"
-                  >
-                    <IonContent class="ion-padding">
-                      Solo se aceptan valores numericos
-                    </IonContent>
+                  <IonPopover trigger="btnHelpNrodocumento" triggerAction="click">
+                    <IonContent class="ion-padding">Solo se aceptan valores numericos</IonContent>
                   </IonPopover>
                   <IonInput
                     value={usuario.usuario}
@@ -196,18 +191,9 @@ const LoginIonic = () => {
                     autofocus
                     inputMode="numeric"
                   />
-                  <IonIcon
-                    aria-hidden="true"
-                    slot="end"
-                    ios={personOutline}
-                    md={person}
-                  />
+                  <IonIcon aria-hidden="true" slot="end" ios={personOutline} md={person} />
                 </IonItem>
-                <IonItem
-                  lines="none"
-                  fill="solid"
-                  className={`${errorPassword && "ion-invalid"}`}
-                >
+                <IonItem lines="none" fill="solid" className={`${errorPassword && "ion-invalid"}`}>
                   <IonLabel position="floating">Contraseña</IonLabel>
                   <IonIcon
                     aria-hidden="true"
@@ -219,8 +205,7 @@ const LoginIonic = () => {
                   />
                   <IonPopover trigger="btnHelpPassword" triggerAction="click">
                     <IonContent class="ion-padding">
-                      Si es su primera vez ingresando, ingrese su numero de
-                      documento
+                      Si es su primera vez ingresando, ingrese su numero de documento
                     </IonContent>
                   </IonPopover>
                   <IonInput
@@ -258,7 +243,7 @@ const LoginIonic = () => {
           </IonCard>
         </IonCol>
       </IonRow>
-      <NuevoPaciente openModal={registrarPaciente} />
+      <NuevoPaciente openModal={registrarPaciente} closeModal={handleCloseModalRegistrarPaciente} />
     </IonGrid>
   );
 };

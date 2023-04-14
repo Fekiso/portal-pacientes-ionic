@@ -256,40 +256,58 @@ export default function TurnosPaciente() {
           <div slot="content">
             <IonGrid>
               <IonRow>
-                <CustomDesplegable
-                  array={especialidades}
-                  value={especialidadSeleccionada}
-                  handleChange={handleChangeSelect}
-                  mostrarTodos={true}
-                  label={"Seleccione un tipo de especialidad"}
-                  id="Especialidad"
-                />
-                <CustomDesplegable
-                  array={listadoPrestadores}
-                  value={prestadorSeleccionado}
-                  handleChange={handleChangeSelect}
-                  mostrarTodos={true}
-                  label={"Seleccione un prestador"}
-                  id="Prestador"
-                />
+                <IonCol size="12" size-md="6">
+                  <IonItem>
+                    <CustomDesplegable
+                      array={especialidades}
+                      value={especialidadSeleccionada}
+                      handleChange={handleChangeSelect}
+                      mostrarTodos={true}
+                      label={"Seleccione un tipo de especialidad"}
+                      id="Especialidad"
+                    />
+                  </IonItem>
+                </IonCol>
+
+                <IonCol size="12" size-md="6">
+                  <IonItem>
+                    <CustomDesplegable
+                      array={listadoPrestadores}
+                      value={prestadorSeleccionado}
+                      handleChange={handleChangeSelect}
+                      mostrarTodos={true}
+                      label={"Seleccione un prestador"}
+                      id="Prestador"
+                    />
+                  </IonItem>
+                </IonCol>
               </IonRow>
               <IonRow>
-                <CustomDesplegable
-                  array={cancelados}
-                  value={filtroCancelados}
-                  handleChange={handleChangeSelect}
-                  mostrarTodos={true}
-                  label={"Cancelados"}
-                  id="Cancelados"
-                />
-                <CustomDesplegable
-                  array={asistidos}
-                  value={filtroAsistidos}
-                  handleChange={handleChangeSelect}
-                  mostrarTodos={true}
-                  label={"Asistidos"}
-                  id="Asistidos"
-                />
+                <IonCol size="12" size-md="6">
+                  <IonItem>
+                    <CustomDesplegable
+                      array={cancelados}
+                      value={filtroCancelados}
+                      handleChange={handleChangeSelect}
+                      mostrarTodos={true}
+                      label={"Cancelados"}
+                      id="Cancelados"
+                    />
+                  </IonItem>
+                </IonCol>
+
+                <IonCol size="12" size-md="6">
+                  <IonItem>
+                    <CustomDesplegable
+                      array={asistidos}
+                      value={filtroAsistidos}
+                      handleChange={handleChangeSelect}
+                      mostrarTodos={true}
+                      label={"Asistidos"}
+                      id="Asistidos"
+                    />
+                  </IonItem>
+                </IonCol>
               </IonRow>
             </IonGrid>
           </div>

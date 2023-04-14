@@ -198,14 +198,18 @@ export default function EstudiosPaciente() {
           <div slot="content">
             <IonGrid>
               <IonRow>
-                <CustomDesplegable
-                  array={listadoEstudiosFiltro}
-                  value={estudioSel}
-                  handleChange={FiltrarEstudios}
-                  mostrarTodos={true}
-                  label={"Seleccione un tipo de estudio"}
-                  id="Estudios"
-                />
+                <IonCol size="12" size-md="6">
+                  <IonItem>
+                    <CustomDesplegable
+                      array={listadoEstudiosFiltro}
+                      value={estudioSel}
+                      handleChange={FiltrarEstudios}
+                      mostrarTodos={true}
+                      label={"Seleccione un tipo de estudio"}
+                      id="Estudios"
+                    />
+                  </IonItem>
+                </IonCol>
               </IonRow>
             </IonGrid>
           </div>

@@ -1,0 +1,5 @@
+ion-toast.custom-toast {
+  --border-radius: 10px;
+  --border-width: 25px;
+  font-weight: bold;
+}

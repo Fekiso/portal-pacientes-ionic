@@ -29,19 +29,21 @@ Array.prototype.getPropiedadesArray = function () {
   return array;
 };
 
-Array.prototype.removeDuplicates = (originalArray, prop)=> {
+Array.prototype.removeDuplicates = (originalArray, prop) => {
   /*Ejemplo de uso */
   // var arrayConDuplicados = [{id: 1, name: 'Juan'},{id: 2, name: 'Pedro'},{id: 3, name: 'Juan'}];
   // var arraySinDuplicados = removeDuplicates(arrayConDuplicados, 'name');
 
   var newArray = [];
-  var lookupObject  = {};
+  var lookupObject = {};
 
-  for(var i in originalArray) {
+  for (var i in originalArray) {
     lookupObject[originalArray[i][prop]] = originalArray[i];
   }
 
-  for(i in lookupObject) {
+  for (i in lookupObject) {
     newArray.push(lookupObject[i]);
   }
-  return newArray;}
+  return newArray;
+};
+

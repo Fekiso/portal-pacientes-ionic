@@ -193,22 +193,31 @@ export default function HorariosPrestadores() {
         {/*Filtros*/}
         <IonGrid>
           <IonRow>
-            <CustomDesplegable
-              array={especialidades}
-              value={especialidadSeleccionada}
-              handleChange={handleChangeSelect}
-              mostrarTodos={true}
-              label={"Seleccione un tipo de especialidad"}
-              id="Especialidad"
-            />
-            <CustomDesplegable
-              array={listadoPrestadores}
-              value={prestadorSeleccionado}
-              handleChange={handleChangeSelect}
-              mostrarTodos={true}
-              label={"Seleccione un prestador"}
-              id="Prestador"
-            />
+            <IonCol size="12" size-md="6">
+              <IonItem>
+                <CustomDesplegable
+                  array={especialidades}
+                  value={especialidadSeleccionada}
+                  handleChange={handleChangeSelect}
+                  mostrarTodos={true}
+                  label={"Seleccione un tipo de especialidad"}
+                  id="Especialidad"
+                />
+              </IonItem>
+            </IonCol>
+
+            <IonCol size="12" size-md="6">
+              <IonItem>
+                <CustomDesplegable
+                  array={listadoPrestadores}
+                  value={prestadorSeleccionado}
+                  handleChange={handleChangeSelect}
+                  mostrarTodos={true}
+                  label={"Seleccione un prestador"}
+                  id="Prestador"
+                />
+              </IonItem>
+            </IonCol>
           </IonRow>
         </IonGrid>
 

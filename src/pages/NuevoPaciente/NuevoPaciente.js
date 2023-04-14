@@ -1,15 +1,37 @@
 import {
+  IonAlert,
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCardHeader,
+  IonCol,
   IonContent,
+  IonDatetime,
+  IonDatetimeButton,
   IonFooter,
   IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
   IonModal,
+  IonNote,
+  IonTitle,
+  IonToast,
   IonToolbar,
 } from "@ionic/react";
 import axios from "axios";
 import dayjs from "dayjs";
+import { closeOutline } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
+import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
+import CustomToast from "../../components/CustomToast/CustomToast";
+import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
+import StyledButton from "../../components/StyledButton/StyledButton";
 
-const NuevoPaciente = ({ openModal }) => {
+const NuevoPaciente = ({ openModal, closeModal }) => {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [correo, setCorreo] = useState("");
@@ -33,7 +55,8 @@ const NuevoPaciente = ({ openModal }) => {
     tipoDoc: false,
     mutual: false,
   });
-  const [modalMensaje, setModalMensaje] = useState({ open: false, motivo: "" });
+  const [openToast, setOpenToast] = useState(false);
+  const [abrirModalCancelarRegistro, setAbrirModalCancelarRegistro] = useState(false);
 
   const traerTiposDocs = async () => {
     let tiposDocs = null;
@@ -97,7 +120,7 @@ const NuevoPaciente = ({ openModal }) => {
       case "Mutual":
         setMutual(value);
         break;
-      case "TipoDoc":
+      case "Tipo Documento":
         setTipoDoc(value);
         break;
       default:
@@ -134,11 +157,7 @@ const NuevoPaciente = ({ openModal }) => {
       pasa = false;
       errors.telefono = true;
     }
-    if (
-      nroDocumento === "" ||
-      nroDocumento === null ||
-      nroDocumento === undefined
-    ) {
+    if (nroDocumento === "" || nroDocumento === null || nroDocumento === undefined) {
       pasa = false;
       errors.nroDocumento = true;
     }
@@ -162,9 +181,7 @@ const NuevoPaciente = ({ openModal }) => {
       errors.mutual = true;
     }
     if (
-      (mutualAfiliado === "" ||
-        mutualAfiliado === null ||
-        mutualAfiliado === undefined) &&
+      (mutualAfiliado === "" || mutualAfiliado === null || mutualAfiliado === undefined) &&
       mutual.codigo !== 1
     ) {
       pasa = false;
@@ -197,8 +214,7 @@ const NuevoPaciente = ({ openModal }) => {
             mutualNombre: this.state.mutual.nombre,
             celular: this.state.telefono,
             email: this.state.correo,
-            mutualAfiliado:
-              this.state.mutual.codigo !== 1 ? this.state.mutualAfiliado : "-",
+            mutualAfiliado: this.state.mutual.codigo !== 1 ? this.state.mutualAfiliado : "-",
             nacimiento: this.state.fechaNac,
             password: this.state.nroDocumento,
           },
@@ -216,18 +232,141 @@ const NuevoPaciente = ({ openModal }) => {
     }
   };
 
+  const togleAbrirCerrarCancelarRegistro = () => {
+    setAbrirModalCancelarRegistro(!abrirModalCancelarRegistro);
+  };
+  const confirmarCancelarRegistro = () => {
+    setAbrirModalCancelarRegistro(false);
+    closeModal();
+  };
+
   // agregar metodos modal confirmacion y cierre de ventana
   return (
-    <IonModal isOpen={openModal}>
+    <IonModal isOpen={openModal} backdropDismiss={false}>
       <IonHeader>
         <IonToolbar>
-          <h3>Registrarme como nuevo paciente</h3>
+          <IonTitle>Registrarme como nuevo paciente</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding"></IonContent>
+      <IonContent className="ion-padding" id="inbox-list">
+        <IonList>
+          <IonNote>Datos personales</IonNote>
+          <IonItem>
+            <IonInput
+              label="Nombre"
+              label-placement="floating"
+              value={nombre}
+              onIonChange={(e) => setNombre(e.target.value)}
+            />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              label="Apellido"
+              label-placement="floating"
+              value={apellido}
+              onIonChange={(e) => setApellido(e.target.value)}
+            />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              type="date"
+              placeholder="Ingrese su apellido"
+              label="Fecha de nacimiento"
+              label-placement="floating"
+              value={fechaNac}
+              onIonChange={(e) => setFechaNac(e.target.value)}
+            />
+          </IonItem>
+          <IonItem>
+            <CustomDesplegable
+              array={tiposDoc}
+              value={tipoDoc}
+              handleChange={handleChangeSelect}
+              mostrarTodos={false}
+              label={"Tipo de documento"}
+              id="Tipo Documento"
+              ocultarLabel={true}
+            />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              inputMode="numeric"
+              label="Numero de documento"
+              label-placement="floating"
+              value={nroDocumento}
+              onIonChange={(e) => setNroDocumento(e.target.value)}
+            />
+          </IonItem>
+        </IonList>
+        <IonList>
+          <IonNote>Datos de mutual</IonNote>
+          <IonItem>
+            <CustomDesplegable
+              array={mutuales}
+              value={mutual}
+              handleChange={handleChangeSelect}
+              mostrarTodos={false}
+              label={"Mutual"}
+              id="Mutual"
+              ocultarLabel={true}
+            />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              label="Numero de afiliado"
+              label-placement="floating"
+              value={mutualAfiliado}
+              onIonChange={(e) => setMutualAfiliado(e.target.value)}
+            />
+          </IonItem>
+        </IonList>
+        <IonList>
+          <IonNote>Datos de contacto</IonNote>
+          <IonItem>
+            <IonInput
+              label="Telefono"
+              label-placement="floating"
+              value={telefono}
+              onIonChange={(e) => setTelefono(e.target.value)}
+            />
+          </IonItem>
+          <IonItem>
+            <IonInput
+              label="Correo electronico"
+              label-placement="floating"
+              value={correo}
+              onIonChange={(e) => setCorreo(e.target.value)}
+            />
+          </IonItem>
+        </IonList>
+      </IonContent>
       <IonFooter>
-        <IonToolbar></IonToolbar>
+        <IonToolbar>
+          <StyledButton lines="none" className="rojo" onclick={togleAbrirCerrarCancelarRegistro}>
+            Cancelar registro
+          </StyledButton>
+          <StyledButton lines="none" className="rojo" onClick={(e) => setOpenToast(true)}>
+            Registrarme
+          </StyledButton>
+        </IonToolbar>
       </IonFooter>
+      <DialogoConfirmacion
+        titulo="Cancelar registro"
+        contenido="¿Esta seguro de cancelar el registro? Se perderan los datos que haya cargado"
+        abrirCerrarModal={abrirModalCancelarRegistro}
+        handleclickCancelar={togleAbrirCerrarCancelarRegistro}
+        handleclickConfirmar={confirmarCancelarRegistro}
+        colorBotonNo="amarillo"
+        colorBotonSi="rojo"
+        textoBotonNo="Cancelar"
+        textoBotonSi="Estoy seguro"
+      />
+      <CustomToast
+        openToast={openToast}
+        onDidDismiss={(e) => setOpenToast(false)}
+        message="This toast will disappear after 5 seconds"
+        tipo="verde"
+      />
     </IonModal>
   );
 };
