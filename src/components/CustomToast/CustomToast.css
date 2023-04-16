@@ -1,5 +1,27 @@
-ion-toast.custom-toast {
+ion-toast {
   --border-radius: 10px;
   --border-width: 25px;
   font-weight: bold;
+}
+/* verde */
+ion-toast.success {
+  --background: var(--ion-color-success-tint);
+  color: var(--ion-color-success-contrast);
+}
+/*rojo*/
+ion-toast.danger {
+  --background: var(--ion-color-danger-tint);
+  color: var(--ion-color-danger-contrast);
+}
+
+/*amarillo*/
+ion-toast.warning {
+  --background: var(--ion-color-warning-tint);
+  color: var(--ion-color-warning-contrast);
+}
+
+/*blanco*/
+ion-toast.primary {
+  --background: var(--ion-color-light-tint);
+  color: var(--ion-color-light-contrast);
 }

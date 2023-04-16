@@ -16,16 +16,12 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
           switch (name) {
             case "Estudios":
               return <EstudiosPaciente />;
-              break;
             case "Turnos":
               return <TurnosPaciente />;
-              break;
             case "Horarios":
               return <HorariosPrestadores />;
-              break;
             case "Reservar":
               return <NuevoTurno />;
-              break;
             default:
               return (
                 <>
@@ -42,7 +38,6 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
                   </p>
                 </>
               );
-              break;
           }
         })()}
       </div>

@@ -30,6 +30,7 @@ import { useHistory } from "react-router";
 import StyledButton from "../../components/StyledButton/StyledButton";
 import NuevoPaciente from "../NuevoPaciente/NuevoPaciente";
 import "./login.css";
+import CustomToast from "../../components/CustomToast/CustomToast";
 
 const LoginIonic = () => {
   const [blnVerPassword, setBlnVerPassword] = useState(false);
@@ -45,6 +46,17 @@ const LoginIonic = () => {
   const [msjErrorPassword, setMsjErrorPassword] = useState("");
   const [cargandoLogin, setCargandoLogin] = useState(false);
   const [registrarPaciente, setRegistrarPaciente] = useState(false);
+  const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
+  const mostrarNotificacion = (abrir, mensaje, tipo) => {
+    let notificacion = {};
+    if (abrir) {
+      notificacion = { open: true, mensaje: mensaje, tipo: tipo };
+    } else {
+      notificacion = { open: false, mensaje: "", tipo: "" };
+    }
+    setToast(notificacion);
+  };
+
   const history = useHistory();
 
   const handleChangeVisibilityOfPassword = () => {
@@ -59,79 +71,75 @@ const LoginIonic = () => {
     sessionStorage.setItem("ppUL", {});
   }, []);
 
-  const LoginUsuario = async () => {
-    let LoginUsuario = {};
-    let LoginUsuarioEstado = 0;
-    let LoginUsuarioToken = "";
-
-    await axios
-      .post(`${urlAxio}Usuarios/LoginPaciente`, {
-        nombreUsuario: usuario.usuario,
-        password: usuario.password,
-      })
-      .then((res) => {
-        LoginUsuarioEstado = res.status;
-        LoginUsuarioToken = res.data.token;
-      })
-      .catch((err) => {
-        console.log("error");
-        console.log(err.response);
+  const loginPaciente = async (usuario, password) => {
+    try {
+      const response = await axios.post(`${urlAxio}Usuarios/LoginPaciente`, {
+        nombreUsuario: usuario,
+        password: password,
       });
-
-    let config = {
-      headers: { Authorization: `Bearer ${LoginUsuarioToken}` },
-    };
-
-    await axios
-      .get(`${urlAxio}Pacientes?documento=${usuario.usuario}`, config)
-      .then((res) => {
-        LoginUsuario["usuario"] = usuario.usuario;
-        LoginUsuario["password"] = usuario.password;
-        LoginUsuario["token"] = LoginUsuarioToken;
-        LoginUsuario["codigo"] = res.data[0].codigo;
-        LoginUsuario["hc"] = res.data[0].hc;
-        LoginUsuario["documentoNro"] = res.data[0].documentoNro;
-        LoginUsuario["documentoTipo"] = res.data[0].documentoTipo;
-        LoginUsuario["documentoTipoNombre"] = res.data[0].documentoTipoNombre;
-        LoginUsuario["nombre"] = res.data[0].nombre;
-        LoginUsuario["apellido"] = res.data[0].apellido;
-        LoginUsuario["mutual"] = res.data[0].mutual;
-        LoginUsuario["mutualNombre"] = res.data[0].mutualNombre;
-        LoginUsuario["telefono"] = res.data[0].telefono;
-        LoginUsuario["celular"] = res.data[0].celular;
-        LoginUsuario["email"] = res.data[0].email;
-        LoginUsuario["mutualAfiliado"] = res.data[0].mutualAfiliado;
-        LoginUsuario["nacimiento"] = res.data[0].nacimiento;
-        LoginUsuario["password"] = res.data[0].password;
-      })
-      .catch((e) => {
-        console.log("Error");
-        console.log(e.response);
-      })
-      .then(() => {
-        if (LoginUsuarioEstado === 200) {
-          setCargandoLogin(false);
-          setUsuario(LoginUsuario);
-          sessionStorage.setItem("ppUL", JSON.stringify(LoginUsuario));
-          history.push("/page/");
-        } else {
-          setErrorPassword(true);
-          setMsjErrorPassword("Usuario o Password incorrecto");
-          setCargandoLogin(false);
-        }
-      });
+      return response.data.token;
+    } catch (error) {
+      console.error("Error en petición loginPaciente", error.response);
+      setErrorPassword(true);
+      setMsjErrorPassword("Usuario o Password incorrecto");
+      mostrarNotificacion(true, "Se produjo un error al intentar generar la sesion", "rojo");
+    }
   };
 
-  const handleClickLogin = () => {
-    if (usuario.usuario !== "" && usuario.password !== "") LoginUsuario();
-    else {
+  const obtenerPaciente = async (token, documento) => {
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+      const response = await axios.get(`${urlAxio}Pacientes?documento=${documento}`, config);
+      const data = response.data[0];
+      return {
+        usuario: usuario.usuario,
+        password: usuario.password,
+        token: token,
+        codigo: data.codigo,
+        hc: data.hc,
+        documentoNro: data.documentoNro,
+        documentoTipo: data.documentoTipo,
+        documentoTipoNombre: data.documentoTipoNombre,
+        nombre: data.nombre,
+        apellido: data.apellido,
+        mutual: data.mutual,
+        mutualNombre: data.mutualNombre,
+        telefono: data.telefono,
+        celular: data.celular,
+        email: data.email,
+        mutualAfiliado: data.mutualAfiliado,
+        nacimiento: data.nacimiento,
+      };
+    } catch (error) {
+      console.error("Error en petición obtenerPaciente", error.response);
+      mostrarNotificacion(
+        true,
+        "Se produjo un error al intentar consultar los datos del paciente",
+        "rojo"
+      );
+    }
+  };
+
+  const handleClickLogin = async () => {
+    setCargandoLogin(true);
+    if (usuario.usuario !== "" && usuario.password !== "") {
+      const token = await loginPaciente(usuario.usuario, usuario.password);
+      const paciente = await obtenerPaciente(token, usuario.usuario);
+      setCargandoLogin(false);
+      setUsuario(paciente);
+      mostrarNotificacion(true, "Sesión iniciada correctamente", "verde");
+      sessionStorage.setItem("ppUL", JSON.stringify(paciente));
+      history.push("/page/");
+    } else {
       if (usuario.usuario !== "") setErrorUsuario(true);
       if (usuario.password !== "") {
         setErrorPassword(true);
         setMsjErrorPassword("Debe ingresar su contraseña");
-        setCargandoLogin(false);
       }
     }
+    setCargandoLogin(false);
   };
 
   const handleSubmit = (e) => {
@@ -243,7 +251,19 @@ const LoginIonic = () => {
           </IonCard>
         </IonCol>
       </IonRow>
-      <NuevoPaciente openModal={registrarPaciente} closeModal={handleCloseModalRegistrarPaciente} />
+
+      <NuevoPaciente
+        mostrarNotificacion={mostrarNotificacion}
+        openModal={registrarPaciente}
+        closeModal={handleCloseModalRegistrarPaciente}
+      />
+
+      <CustomToast
+        openToast={toast.open}
+        onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
+        message={toast.mensaje}
+        colorNotificacion={toast.tipo}
+      />
     </IonGrid>
   );
 };

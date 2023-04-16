@@ -1,12 +1,12 @@
 import { IonAlert, IonButton } from "@ionic/react";
 import { useEffect, useState } from "react";
-
+import "./DialogoConfirmacion.css";
 export default function DialogoConfirmacion({
   titulo,
   contenido,
   abrirCerrarModal,
-  handleclickCancelar,
-  handleclickConfirmar,
+  handleclickBotonNo,
+  handleclickBotonSi,
   colorBotonNo,
   colorBotonSi,
   textoBotonNo,
@@ -24,22 +24,16 @@ export default function DialogoConfirmacion({
   });
 
   const getColor = (color) => {
-    let variante = "";
     switch (color) {
       case "verde":
-        variante = "success";
-        break;
+        return "success";
       case "rojo":
-        variante = "danger";
-        break;
+        return "danger";
       case "amarillo":
-        variante = "warning";
-        break;
+        return "warning";
       default:
-        variante = "primary";
-        break;
+        return "primary";
     }
-    return variante;
   };
 
   const CargarBotones = () => {
@@ -47,7 +41,7 @@ export default function DialogoConfirmacion({
       texto: textoBotonSi,
       clase: getColor(colorBotonSi),
     });
-    setBotonSi({
+    setBotonNo({
       texto: textoBotonNo,
       clase: getColor(colorBotonNo),
     });
@@ -67,14 +61,14 @@ export default function DialogoConfirmacion({
         {
           text: botonNo.texto,
           role: "cancel",
-          handler: handleclickCancelar,
-          // cssClass: botonNo.clase,
+          handler: handleclickBotonNo,
+          cssClass: botonNo.clase,
         },
         {
-          text: botonNo.texto,
+          text: botonSi.texto,
           role: "accept",
-          handler: handleclickConfirmar,
-          // cssClass: botonNo.clase,
+          handler: handleclickBotonSi,
+          cssClass: botonSi.clase,
         },
       ]}
       onDidDismiss={({ detail }) => console.log(detail)}

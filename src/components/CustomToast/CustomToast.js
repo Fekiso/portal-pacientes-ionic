@@ -1,32 +1,26 @@
 import { IonToast } from "@ionic/react";
 import { closeOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import './CustomToast.css'
-function CustomToast({ openToast, onDidDismiss, message, tipo }) {
+import "./CustomToast.css";
+function CustomToast({ openToast, onDidDismiss, message, colorNotificacion }) {
   const [color, setColor] = useState("");
-  
+
   const getColor = () => {
-    let variante = "";
-    switch (tipo) {
+    switch (colorNotificacion) {
       case "verde":
-        variante = "success";
-        break;
+        return "success";
       case "rojo":
-        variante = "danger";
-        break;
-      case "amarrillo":
-        variante = "warning";
-        break;
+        return "danger";
+      case "amarillo":
+        return "warning";
       default:
-        variante = "primary";
-        break;
+        return "primary";
     }
-    setColor(variante);
   };
 
   useEffect(() => {
-    getColor();
-  }, []);
+    if (openToast) setColor(getColor());
+  }, [openToast]);
 
   return (
     <IonToast
@@ -34,9 +28,8 @@ function CustomToast({ openToast, onDidDismiss, message, tipo }) {
       onDidDismiss={onDidDismiss}
       message={message}
       duration={5000}
-      color={color}
-      position='top'
-      class="custom-toast"
+      position="top"
+      className={`${color}`}
       buttons={[
         {
           icon: closeOutline,

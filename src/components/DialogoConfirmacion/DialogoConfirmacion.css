@@ -1,19 +1,51 @@
+button.alert-button {
+  --border-radius: 15px;
+}
+
+/* Boton verde */
 button.alert-button.success {
-  background-color: var(--ion-color-success);
+  background-color: var(--ion-color-success-tint);
   color: var(--ion-color-success-contrast);
 }
+button.alert-button.success:hover {
+  background-color: var(--ion-color-success);
+}
+button.alert-button.success:active {
+  background-color: var(--ion-color-success-shade);
+}
 
+/*Boton rojo*/
 button.alert-button.danger {
-  background-color: var(--ion-color-danger);
+  background-color: var(--ion-color-danger-tint);
   color: var(--ion-color-danger-contrast);
 }
-
-button.alert-button.warning {
-  background-color: var(--ion-color-warning);
-  color: var(--ion-color-warning-contrast);
+button.alert-button.danger:hover {
+  background-color: var(--ion-color-danger);
+}
+button.alert-button.danger:active {
+  background-color: var(--ion-color-danger-shade);
 }
 
+/*Boton amarillo*/
+button.alert-button.warning {
+  background-color: var(--ion-color-warning-tint);
+  color: var(--ion-color-warning-contrast);
+}
+button.alert-button.warning:hover {
+  background-color: var(--ion-color-warning);
+}
+button.alert-button.warning:active {
+  background-color: var(--ion-color-warning-shade);
+}
+
+/*Boton blanco*/
 button.alert-button.primary {
-  background-color: var(--ion-color-primary);
-  color: var(--ion-color-primary-contrast);
+  background-color: var(--ion-color-light-tint);
+  color: var(--ion-color-light-contrast);
+}
+button.alert-button.primary:hover {
+  background-color: var(--ion-color-light);
+}
+button.alert-button.primary:active {
+  background-color: var(--ion-color-light-shade);
 }

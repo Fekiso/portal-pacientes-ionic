@@ -18,20 +18,22 @@ import {
   IonListHeader,
   IonModal,
   IonNote,
+  IonPopover,
+  IonRow,
   IonTitle,
   IonToast,
   IonToolbar,
 } from "@ionic/react";
 import axios from "axios";
 import dayjs from "dayjs";
-import { closeOutline } from "ionicons/icons";
+import { alert, alertOutline, closeOutline } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
 import StyledButton from "../../components/StyledButton/StyledButton";
 
-const NuevoPaciente = ({ openModal, closeModal }) => {
+const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [correo, setCorreo] = useState("");
@@ -55,7 +57,6 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
     tipoDoc: false,
     mutual: false,
   });
-  const [openToast, setOpenToast] = useState(false);
   const [abrirModalCancelarRegistro, setAbrirModalCancelarRegistro] = useState(false);
 
   const traerTiposDocs = async () => {
@@ -138,6 +139,10 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
     }
   };
 
+  const getTextoDesplegableSeleccionado = (array, codigo) => {
+    return array[array.findIndex((item) => item.codigo === codigo)].text;
+  };
+
   const validarFormRegistroPaciente = () => {
     let pasa = true;
     let errors = {};
@@ -200,35 +205,54 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
     };
 
     try {
-      if (validarFormRegistroPaciente) {
+      if (validarFormRegistroPaciente()) {
         const response = await axios.post(
           `${url}pacientes`,
           {
-            hc: this.state.nroDocumento,
-            documentoNro: this.state.nroDocumento,
-            documentoTipo: this.state.tipoDoc.codigo,
-            documentoTipoNombre: this.state.tipoDoc.nombre,
-            nombre: this.state.nombre,
-            apellido: this.state.apellido,
-            mutual: this.state.mutual.codigo,
-            mutualNombre: this.state.mutual.nombre,
-            celular: this.state.telefono,
-            email: this.state.correo,
-            mutualAfiliado: this.state.mutual.codigo !== 1 ? this.state.mutualAfiliado : "-",
-            nacimiento: this.state.fechaNac,
-            password: this.state.nroDocumento,
+            hc: nroDocumento,
+            documentoNro: nroDocumento,
+            documentoTipo: tipoDoc,
+            documentoTipoNombre: getTextoDesplegableSeleccionado(tiposDoc, tipoDoc),
+            nombre: nombre,
+            apellido: apellido,
+            mutual: mutual,
+            mutualNombre: getTextoDesplegableSeleccionado(mutuales, mutual),
+            celular: telefono,
+            email: correo,
+            mutualAfiliado: mutual !== 1 ? mutualAfiliado : "-",
+            nacimiento: fechaNac,
+            password: nroDocumento,
           },
           config
         );
         if (response) {
-          console.log("Registrado");
+          if (response.status === 200) {
+            mostrarNotificacion(true, "Usuario registrado correctamente", "verde");
+          }
+          if (response.status === 400) {
+            mostrarNotificacion(
+              true,
+              "No se ha podido registrar el nuevo usuario debido a: " + response,
+              "rojo"
+            );
+          }
+        } else {
+          mostrarNotificacion(
+            true,
+            "Ocurrio algun problema al intentar registrar el nuevo usuario, por favor reintente mas tarde",
+            "rojo"
+          );
         }
       } else {
-        // this.snackbarEstado(true, "Faltan de rellenar algunos campos", "Error");
+        mostrarNotificacion(true, "Falta rellenar algunos campos", "rojo");
       }
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ocurrio algun problema al intentar registrar el nuevo usuario, por favor reintente mas tarde",
+        "rojo"
+      );
+      console.log(e);
     }
   };
 
@@ -239,7 +263,6 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
     setAbrirModalCancelarRegistro(false);
     closeModal();
   };
-
   // agregar metodos modal confirmacion y cierre de ventana
   return (
     <IonModal isOpen={openModal} backdropDismiss={false}>
@@ -257,7 +280,25 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label-placement="floating"
               value={nombre}
               onIonChange={(e) => setNombre(e.target.value)}
+              className={`${errores.nombre && "ion-invalid"}`}
             />
+
+            {errores.nombre && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorNombre"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorNombre" triggerAction="click">
+                  <IonContent class="ion-padding">No se ingreso el nombre</IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
           <IonItem>
             <IonInput
@@ -265,7 +306,24 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label-placement="floating"
               value={apellido}
               onIonChange={(e) => setApellido(e.target.value)}
+              className={`${errores.apellido && "ion-invalid"}`}
             />
+            {errores.apellido && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorApellido"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorApellido" triggerAction="click">
+                  <IonContent class="ion-padding">No se ingreso el apellido</IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
           <IonItem>
             <IonInput
@@ -275,7 +333,28 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label-placement="floating"
               value={fechaNac}
               onIonChange={(e) => setFechaNac(e.target.value)}
+              min={dayjs(new dayjs()).subtract(110, "year").format("YYYY-MM-DD")}
+              max={dayjs(new dayjs()).format("YYYY-MM-DD")}
+              className={`${errores.fechaNac && "ion-invalid"}`}
             />
+            {errores.fechaNac && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorFechaNac"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorFechaNac" triggerAction="click">
+                  <IonContent class="ion-padding">
+                    No se ingreso una fecha de nacimiento valida
+                  </IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
           <IonItem>
             <CustomDesplegable
@@ -286,7 +365,25 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label={"Tipo de documento"}
               id="Tipo Documento"
               ocultarLabel={true}
+              className={`${errores.tipoDoc && "ion-invalid"}`}
+              errorText="No se selecciono un tipo de documento"
             />
+            {errores.tipoDoc && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorTipoDoc"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorTipoDoc" triggerAction="click">
+                  <IonContent class="ion-padding">No se selecciono un tipo de documento</IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
           <IonItem>
             <IonInput
@@ -295,7 +392,24 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label-placement="floating"
               value={nroDocumento}
               onIonChange={(e) => setNroDocumento(e.target.value)}
+              className={`${errores.nroDocumento && "ion-invalid"}`}
             />
+            {errores.nroDocumento && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorNroDocumento"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorNroDocumento" triggerAction="click">
+                  <IonContent class="ion-padding">No se ingreso un numero de documento</IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
         </IonList>
         <IonList>
@@ -309,6 +423,7 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label={"Mutual"}
               id="Mutual"
               ocultarLabel={true}
+              className={`${errores.mutual && "ion-invalid"}`}
             />
           </IonItem>
           <IonItem>
@@ -317,7 +432,26 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label-placement="floating"
               value={mutualAfiliado}
               onIonChange={(e) => setMutualAfiliado(e.target.value)}
+              className={`${errores.mutualAfiliado && "ion-invalid"}`}
             />
+            {errores.mutualAfiliado && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorMutualAfiliado"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorMutualAfiliado" triggerAction="click">
+                  <IonContent class="ion-padding">
+                    No se ingreso un numero de afiliado, en caso de no tener
+                  </IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
         </IonList>
         <IonList>
@@ -328,7 +462,24 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label-placement="floating"
               value={telefono}
               onIonChange={(e) => setTelefono(e.target.value)}
+              className={`${errores.telefono && "ion-invalid"}`}
             />
+            {errores.telefono && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorTelefono"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorTelefono" triggerAction="click">
+                  <IonContent class="ion-padding">No se ingreso un telefono de contacto</IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
           <IonItem>
             <IonInput
@@ -336,36 +487,59 @@ const NuevoPaciente = ({ openModal, closeModal }) => {
               label-placement="floating"
               value={correo}
               onIonChange={(e) => setCorreo(e.target.value)}
+              className={`${errores.correo && "ion-invalid"}`}
             />
+            {errores.correo && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorCorreo"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorCorreo" triggerAction="click">
+                  <IonContent class="ion-padding">
+                    No se ingreso un correo electronico valido
+                  </IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
         </IonList>
       </IonContent>
       <IonFooter>
         <IonToolbar>
-          <StyledButton lines="none" className="rojo" onclick={togleAbrirCerrarCancelarRegistro}>
-            Cancelar registro
-          </StyledButton>
-          <StyledButton lines="none" className="rojo" onClick={(e) => setOpenToast(true)}>
-            Registrarme
-          </StyledButton>
+          <IonRow className="ion-justify-content-around">
+            <StyledButton
+              lines="none"
+              className="rojo  ion-padding-horizontal"
+              onclick={togleAbrirCerrarCancelarRegistro}
+            >
+              Cancelar registro
+            </StyledButton>
+            <StyledButton
+              lines="none"
+              className="verde  ion-padding-horizontal"
+              onClick={registrarPaciente}
+            >
+              Registrarme
+            </StyledButton>
+          </IonRow>
         </IonToolbar>
       </IonFooter>
       <DialogoConfirmacion
         titulo="Cancelar registro"
         contenido="¿Esta seguro de cancelar el registro? Se perderan los datos que haya cargado"
         abrirCerrarModal={abrirModalCancelarRegistro}
-        handleclickCancelar={togleAbrirCerrarCancelarRegistro}
-        handleclickConfirmar={confirmarCancelarRegistro}
+        handleclickBotonNo={togleAbrirCerrarCancelarRegistro}
+        handleclickBotonSi={confirmarCancelarRegistro}
         colorBotonNo="amarillo"
         colorBotonSi="rojo"
         textoBotonNo="Cancelar"
         textoBotonSi="Estoy seguro"
-      />
-      <CustomToast
-        openToast={openToast}
-        onDidDismiss={(e) => setOpenToast(false)}
-        message="This toast will disappear after 5 seconds"
-        tipo="verde"
       />
     </IonModal>
   );

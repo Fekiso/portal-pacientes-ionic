@@ -46,3 +46,7 @@ ion-grid .tabla {
   border-bottom: none;
   /* color: #000; */
 }
+
+ion-datetime .light {
+  color: #9f9f9f;
+}
