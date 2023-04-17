@@ -6,6 +6,7 @@ import "dayjs/locale/es";
 import {
   IonAccordion,
   IonAccordionGroup,
+  IonBackdrop,
   IonButton,
   IonCol,
   IonGrid,
@@ -14,11 +15,14 @@ import {
   IonLabel,
   IonList,
   IonRow,
+  IonSpinner,
 } from "@ionic/react";
 
 import { close, closeOutline } from "ionicons/icons";
 import "./TurnosPaciente.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
+import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
+import CustomToast from "../../components/CustomToast/CustomToast";
 
 export default function TurnosPaciente() {
   const [usuario, setUsuario] = useState({});
@@ -34,6 +38,8 @@ export default function TurnosPaciente() {
   const [filtroAsistidos, setFiltroAsistidos] = useState(-1);
   const [listadoTurnos, setListadoTurnos] = useState([]);
   const [listadoTurnosFiltrados, setListadoTurnosFiltrados] = useState([]);
+  const [turnoSeleccionado, setTurnoSeleccionado] = useState({});
+  const [abrirModalCancelarReserva, setAbrirModalCancelarReserva] = useState(false);
   const [cancelados, setCancelados] = useState([
     { codigo: true, text: "Cancelados" },
     { codigo: false, text: "No cancelados" },
@@ -42,6 +48,17 @@ export default function TurnosPaciente() {
     { codigo: false, text: "No asistidos" },
     { codigo: true, text: "Asistidos" },
   ]);
+
+  const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
+  const mostrarNotificacion = (abrir, mensaje, tipo) => {
+    let notificacion = {};
+    if (abrir) {
+      notificacion = { open: true, mensaje: mensaje, tipo: tipo };
+    } else {
+      notificacion = { open: false, mensaje: "", tipo: "" };
+    }
+    setToast(notificacion);
+  };
   const history = useHistory();
 
   const traerTurnosPaciente = async (paciente) => {
@@ -52,15 +69,13 @@ export default function TurnosPaciente() {
     };
 
     try {
-      const servicio = await axios
-        .get(`${url}Servicios`, config)
-        .then((response) => {
-          if (response.data.length !== 0) {
-            return response.data;
-          } else {
-            return null;
-          }
-        });
+      const servicio = await axios.get(`${url}Servicios`, config).then((response) => {
+        if (response.data.length !== 0) {
+          return response.data;
+        } else {
+          return null;
+        }
+      });
       if (servicio !== null) {
         const response = await axios.get(
           `${url}Turnos/TurnosPaciente/?paciente=${paciente.codigo}&servicio=${servicio[0].codigo}`,
@@ -74,10 +89,12 @@ export default function TurnosPaciente() {
         setListadoTurnos(turnos);
       }
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ocurrió un problema al intentar consultar sus turnos registrados",
+        "rojo"
+      );
     }
-    setCargando(false);
   };
 
   const traerEspecialidades = async (paciente) => {
@@ -95,9 +112,7 @@ export default function TurnosPaciente() {
         especialidades = null;
       }
 
-      especialidades = especialidades.filter(
-        (especialidad) => especialidad.vigente === true
-      );
+      especialidades = especialidades.filter((especialidad) => especialidad.vigente === true);
 
       especialidades = especialidades.map((especialidad) => {
         return {
@@ -108,10 +123,12 @@ export default function TurnosPaciente() {
 
       setEspecialidades(especialidades);
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ocurrió un problema al intentar consultar las especialidades registradas",
+        "rojo"
+      );
     }
-    setCargando(false);
   };
 
   const traerPrestadores = async (paciente) => {
@@ -129,9 +146,7 @@ export default function TurnosPaciente() {
         prestadores = null;
       }
 
-      prestadores = prestadores.filter(
-        (prestador) => prestador.vigente === true
-      );
+      prestadores = prestadores.filter((prestador) => prestador.vigente === true);
 
       prestadores = prestadores.map((prestador) => {
         return {
@@ -143,13 +158,16 @@ export default function TurnosPaciente() {
       setPrestadores(prestadores);
       setListadoPrestadores(prestadores);
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ocurrió un problema al intentar consultar los/las prestadores/as registradas",
+        "rojo"
+      );
     }
-    setCargando(false);
   };
 
   useEffect(() => {
+    setCargando(true);
     try {
       const sesion = JSON.parse(sessionStorage.getItem("ppUL"));
       if (sesion !== {}) {
@@ -164,6 +182,7 @@ export default function TurnosPaciente() {
     } catch (e) {
       history.push({ pathname: "/ErrorPage", motivo: "LostSesion" });
     }
+    setCargando(false);
   }, []);
 
   const handleChangeSelect = (value, select) => {
@@ -204,27 +223,53 @@ export default function TurnosPaciente() {
     }
   };
 
+  const CancelarTurno = async () => {
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${usuario.token}` },
+      };
+
+      let servicio = null;
+      const serviciosResponse = await axios.get(`${urlAxio}Servicios`, config);
+
+      if (serviciosResponse.data.length !== 0) {
+        servicio = serviciosResponse.data[0];
+      }
+
+      if (servicio?.codigo !== null && turnoSeleccionado) {
+        const cancelarTurnoResponse = await axios.patch(
+          `${urlAxio}Turnos/Quitar/${turnoSeleccionado.codigo}`,
+          "",
+          config
+        );
+
+        if (cancelarTurnoResponse.status === 200 && cancelarTurnoResponse.statusText === "OK") {
+          mostrarNotificacion(true, "El turno se cancelo correctamente", "verde");
+        } else {
+          mostrarNotificacion(true, "Ocurrió un problema al intentar cancelar el turno", "rojo");
+        }
+      }
+    } catch (error) {
+      console.log("Error", error);
+      mostrarNotificacion(true, "Ocurrió un problema al intentar cancelar el turno", "rojo");
+    }
+  };
+
   const FiltrarTurnos = (turnos) => {
     let listado = turnos || [];
 
     if (listado.length > 0) {
       if (especialidadSeleccionada !== -1) {
-        listado = listado.filter(
-          (turno) => especialidadSeleccionada === turno.especialidad
-        );
+        listado = listado.filter((turno) => especialidadSeleccionada === turno.especialidad);
       }
       if (prestadorSeleccionado !== -1) {
-        listado = listado.filter(
-          (turno) => prestadorSeleccionado === turno.prestadorCod
-        );
+        listado = listado.filter((turno) => prestadorSeleccionado === turno.prestadorCod);
       }
       if (filtroAsistidos !== -1) {
         listado = listado.filter((turno) => filtroAsistidos === turno.asistio);
       }
       if (filtroCancelados !== -1) {
-        listado = listado.filter(
-          (turno) => filtroCancelados === turno.aCancelar
-        );
+        listado = listado.filter((turno) => filtroCancelados === turno.aCancelar);
       }
     }
 
@@ -245,6 +290,26 @@ export default function TurnosPaciente() {
   //   return especialidadesFiltradas;
   // };
 
+  const togleAbrirCerrarCancelarReserva = () => {
+    if (abrirModalCancelarReserva) {
+      setTurnoSeleccionado({});
+      // handleChangeSelect(-1, "Especialidad");
+    }
+    setAbrirModalCancelarReserva(!abrirModalCancelarReserva);
+  };
+
+  const handleClickSeleccionarTurno = (turno) => {
+    setTurnoSeleccionado(turno);
+    togleAbrirCerrarCancelarReserva();
+  };
+
+  const handleClickCancelarReserva = async () => {
+    setCargando(true);
+    await CancelarTurno();
+    togleAbrirCerrarCancelarReserva();
+    await traerTurnosPaciente(usuario);
+    setCargando(false);
+  };
   return (
     <>
       {/*Desplegable con filtros*/}
@@ -340,9 +405,9 @@ export default function TurnosPaciente() {
           {FiltrarTurnos(listadoTurnos).map((fila) => (
             <IonItem key={fila.nombre} className="fila">
               <IonCol className="celda" size="2.5">
-                <p>{`${dayjs(fila.fecha).format("DD/MM/YYYY")} ${dayjs(
-                  fila.hora
-                ).format("HH:MM")}`}</p>
+                <p>{`${dayjs(fila.fecha).format("DD/MM/YYYY")} ${dayjs(fila.hora).format(
+                  "HH:MM"
+                )}`}</p>
               </IonCol>
               <IonCol className="celda" size="3">
                 <p>{fila.prestadorNom}</p>
@@ -358,23 +423,59 @@ export default function TurnosPaciente() {
               </IonCol>
               <IonCol className="celda">
                 {dayjs(fila.fecha).isAfter(new dayjs()) ? (
-                  <div className="iconColumn">
-                    <IonButton shape="roud" fill="clear">
-                      <IonIcon
-                        size="large"
-                        aria-label="Cancelar turno"
-                        ios={closeOutline}
-                        md={close}
-                        onClick={(e) => console.log("Visualizar")}
-                      />
-                    </IonButton>
-                  </div>
-                ) : null}
+                  // <div className="iconColumn">
+                  <IonButton
+                    shape="roud"
+                    fill="clear"
+                    onClick={() => handleClickSeleccionarTurno(fila)}
+                  >
+                    <IonIcon
+                      size="large"
+                      aria-label="Cancelar turno"
+                      ios={closeOutline}
+                      md={close}
+                    />
+                  </IonButton>
+                ) : // </div>
+                null}
               </IonCol>
             </IonItem>
           ))}
         </IonGrid>
       </IonList>
+
+      <DialogoConfirmacion
+        titulo="Reservar turno"
+        contenido={`Ha decidido cancelar el turno con el/la prestador/a ${
+          turnoSeleccionado.prestadorNom
+        }, con especialidad en ${turnoSeleccionado.especialidadNom}, para el dia ${dayjs(
+          turnoSeleccionado.fecha
+        ).format("DD/MM/YYYY")}, a las ${dayjs(turnoSeleccionado.hora).format(
+          "HH:mm"
+        )}, ¿Esta seguro/a de ello?`}
+        abrirCerrarModal={abrirModalCancelarReserva}
+        handleclickBotonNo={togleAbrirCerrarCancelarReserva}
+        handleclickBotonSi={handleClickCancelarReserva}
+        colorBotonNo="amarillo"
+        colorBotonSi="rojo"
+        textoBotonNo="No"
+        textoBotonSi="Si"
+      />
+
+      <CustomToast
+        openToast={toast.open}
+        onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
+        message={toast.mensaje}
+        colorNotificacion={toast.tipo}
+      />
+
+      {cargando && (
+        <IonBackdrop>
+          <div id="box">
+            <IonSpinner name="crescent" color="secondary" />
+          </div>
+        </IonBackdrop>
+      )}
     </>
   );
 }

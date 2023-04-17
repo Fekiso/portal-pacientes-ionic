@@ -23,6 +23,7 @@ import "./NuevoTurno.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import StyledButton from "../../components/StyledButton/StyledButton";
 import CustomToast from "../../components/CustomToast/CustomToast";
+import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
 
 export default function NuevoTurno() {
   const [usuario, setUsuario] = useState({});
@@ -36,8 +37,9 @@ export default function NuevoTurno() {
   const [prestadorSeleccionado, setPrestadorSeleccionado] = useState(-1);
   const [fechasFuturas, setFechasFuturas] = useState([]);
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
-  const [turnosDisponibles, setTurnosDisponibles] = useState("");
-
+  const [turnosDisponibles, setTurnosDisponibles] = useState([]);
+  const [turnoSeleccionado, setTurnoSeleccionado] = useState({});
+  const [abrirModalConfirmarReserva, setAbrirModalConfirmarReserva] = useState(false);
   const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
   const mostrarNotificacion = (abrir, mensaje, tipo) => {
     let notificacion = {};
@@ -183,11 +185,14 @@ export default function NuevoTurno() {
       }
 
       if (fechaSeleccionada.length !== 0 && agenda.data.length !== 0) {
-        setTurnosDisponibles(
-          agenda.data.filter(
-            (dia) => dia.fecha === fechaSeleccionada[0].fecha && dia.paciente === 0
-          )
+        const agendaDelDia = agenda.data.filter(
+          (dia) => dia.fecha === fechaSeleccionada[0].fecha && dia.paciente === 0 && !dia.cancelado
         );
+        if (agendaDelDia.length > 0) {
+          setTurnosDisponibles(agendaDelDia);
+        } else {
+          mostrarNotificacion(true, "No hay turnos disponibles para el dia indicado", "amarillo");
+        }
       } else {
         mostrarNotificacion(true, "No hay turnos disponibles para el dia indicado", "amarillo");
       }
@@ -420,6 +425,46 @@ export default function NuevoTurno() {
     }
   };
 
+  const actualizarTurno = async () => {
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${usuario.token}` },
+      };
+
+      let servicio = null;
+      const serviciosResponse = await axios.get(`${urlAxio}Servicios`, config);
+
+      if (serviciosResponse.data.length !== 0) {
+        servicio = serviciosResponse.data[0];
+      }
+
+      if (servicio?.codigo !== null && turnoSeleccionado) {
+        const actualizarTurnoResponse = await axios.patch(
+          `${urlAxio}Turnos/DarTurno/${turnoSeleccionado.codigo}?servicio=${servicio.codigo}`,
+          {
+            codigo: turnoSeleccionado.codigo,
+            paciente: usuario.codigo,
+            mutual: usuario.mutual,
+            // estudio: 0,
+            prestador: prestadorSeleccionado,
+            telemedicina: turnoSeleccionado.telemedicina,
+            observaciones: "Turno reservado via web por el paciente",
+          },
+          config
+        );
+
+        if (actualizarTurnoResponse.status === 200 && actualizarTurnoResponse.statusText === "OK") {
+          mostrarNotificacion(true, "El turno se reservó correctamente", "verde");
+        } else {
+          mostrarNotificacion(true, "Ocurrió un problema al intentar reservar el turno", "rojo");
+        }
+      }
+    } catch (error) {
+      console.log("Error", error);
+      mostrarNotificacion(true, "Ocurrió un problema al intentar reservar el turno", "rojo");
+    }
+  };
+
   const handleChangeSelect = (value, select) => {
     switch (select) {
       case "Especialidad":
@@ -454,8 +499,30 @@ export default function NuevoTurno() {
   };
 
   const handleChangeFecha = (value) => {
+    setTurnosDisponibles([]);
     setFechaSeleccionada(value);
     obtenerHorariosFechaSeleccionada(value);
+  };
+
+  const togleAbrirCerrarConfirmarReserva = () => {
+    if (abrirModalConfirmarReserva) {
+      setTurnoSeleccionado({});
+      // handleChangeSelect(-1, "Especialidad");
+    }
+    setAbrirModalConfirmarReserva(!abrirModalConfirmarReserva);
+  };
+
+  const handleClickSeleccionarTurno = (turno) => {
+    setTurnoSeleccionado(turno);
+    togleAbrirCerrarConfirmarReserva();
+  };
+
+  const handleClickConfirmarHacerReserva = () => {
+    actualizarTurno().then(() => {
+      togleAbrirCerrarConfirmarReserva();
+      setFechaSeleccionada("");
+      setTurnosDisponibles([]);
+    });
   };
 
   return (
@@ -519,25 +586,15 @@ export default function NuevoTurno() {
                         Horarios disponibles para: {dayjs(fechaSeleccionada).format("DD/MM/YYYY")}
                       </h5>
                     </IonListHeader>
-                    {/* <IonItem className="fila cabecera">
-                      <IonCol className="celda cabecera">
-                        <p>Hora</p>
-                      </IonCol>
-                    </IonItem> */}
 
                     <IonGrid>
                       <IonRow>
                         {turnosDisponibles.map((turno) => (
                           <IonCol sizeXs="12" sizeMd="6" sizeLg="3" key={turno.codigo}>
                             <StyledButton
+                              expand="block"
                               className="blanco"
-                              // onClick={() =>
-                              //   mostrarNotificacion(
-                              //     true,
-                              //     "Se produjo un error al intentar reservar el turno",
-                              //     "rojo"
-                              //   )
-                              // }
+                              onClick={() => handleClickSeleccionarTurno(turno)}
                             >
                               {dayjs(turno.hora).format("HH:mm")}
                             </StyledButton>
@@ -552,6 +609,24 @@ export default function NuevoTurno() {
           </IonGrid>
         ) : null}
       </div>
+
+      <DialogoConfirmacion
+        titulo="Reservar turno"
+        contenido={`Ha seleccionado el turno con el/la prestador/a ${
+          turnoSeleccionado.prestadorNom
+        }, con especialidad en ${turnoSeleccionado.especialidadNom}, para el dia ${dayjs(
+          turnoSeleccionado.fecha
+        ).format("DD/MM/YYYY")}, a las ${dayjs(turnoSeleccionado.hora).format(
+          "HH:mm"
+        )}, ¿es esto correcto?`}
+        abrirCerrarModal={abrirModalConfirmarReserva}
+        handleclickBotonNo={togleAbrirCerrarConfirmarReserva}
+        handleclickBotonSi={handleClickConfirmarHacerReserva}
+        colorBotonNo="amarillo"
+        colorBotonSi="verde"
+        textoBotonNo="No, no lo estoy"
+        textoBotonSi="Si, es correcto"
+      />
 
       <CustomToast
         openToast={toast.open}
