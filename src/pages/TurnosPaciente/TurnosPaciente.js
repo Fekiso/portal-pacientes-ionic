@@ -6,7 +6,6 @@ import "dayjs/locale/es";
 import {
   IonAccordion,
   IonAccordionGroup,
-  IonBackdrop,
   IonButton,
   IonCol,
   IonGrid,
@@ -15,7 +14,6 @@ import {
   IonLabel,
   IonList,
   IonRow,
-  IonSpinner,
 } from "@ionic/react";
 
 import { close, closeOutline } from "ionicons/icons";
@@ -23,6 +21,7 @@ import "./TurnosPaciente.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
 import CustomToast from "../../components/CustomToast/CustomToast";
+import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 
 export default function TurnosPaciente() {
   const [usuario, setUsuario] = useState({});
@@ -39,7 +38,8 @@ export default function TurnosPaciente() {
   const [listadoTurnos, setListadoTurnos] = useState([]);
   const [listadoTurnosFiltrados, setListadoTurnosFiltrados] = useState([]);
   const [turnoSeleccionado, setTurnoSeleccionado] = useState({});
-  const [abrirModalCancelarReserva, setAbrirModalCancelarReserva] = useState(false);
+  const [abrirModalCancelarReserva, setAbrirModalCancelarReserva] =
+    useState(false);
   const [cancelados, setCancelados] = useState([
     { codigo: true, text: "Cancelados" },
     { codigo: false, text: "No cancelados" },
@@ -69,13 +69,15 @@ export default function TurnosPaciente() {
     };
 
     try {
-      const servicio = await axios.get(`${url}Servicios`, config).then((response) => {
-        if (response.data.length !== 0) {
-          return response.data;
-        } else {
-          return null;
-        }
-      });
+      const servicio = await axios
+        .get(`${url}Servicios`, config)
+        .then((response) => {
+          if (response.data.length !== 0) {
+            return response.data;
+          } else {
+            return null;
+          }
+        });
       if (servicio !== null) {
         const response = await axios.get(
           `${url}Turnos/TurnosPaciente/?paciente=${paciente.codigo}&servicio=${servicio[0].codigo}`,
@@ -112,7 +114,9 @@ export default function TurnosPaciente() {
         especialidades = null;
       }
 
-      especialidades = especialidades.filter((especialidad) => especialidad.vigente === true);
+      especialidades = especialidades.filter(
+        (especialidad) => especialidad.vigente === true
+      );
 
       especialidades = especialidades.map((especialidad) => {
         return {
@@ -146,7 +150,9 @@ export default function TurnosPaciente() {
         prestadores = null;
       }
 
-      prestadores = prestadores.filter((prestador) => prestador.vigente === true);
+      prestadores = prestadores.filter(
+        (prestador) => prestador.vigente === true
+      );
 
       prestadores = prestadores.map((prestador) => {
         return {
@@ -180,7 +186,7 @@ export default function TurnosPaciente() {
         document.title = localStorage.getItem("tituloWeb");
       }
     } catch (e) {
-      history.push({ pathname: "/ErrorPage", motivo: "LostSesion" });
+      history.push({ pathname: "/ErrorPage" });
     }
     setCargando(false);
   }, []);
@@ -218,7 +224,7 @@ export default function TurnosPaciente() {
         setFiltroAsistidos(value);
         break;
       default:
-        console.log("invalid type of select");
+        mostrarNotificacion(true, "Seleccion invalida", "rojo");
         break;
     }
   };
@@ -243,15 +249,29 @@ export default function TurnosPaciente() {
           config
         );
 
-        if (cancelarTurnoResponse.status === 200 && cancelarTurnoResponse.statusText === "OK") {
-          mostrarNotificacion(true, "El turno se cancelo correctamente", "verde");
+        if (
+          cancelarTurnoResponse.status === 200 &&
+          cancelarTurnoResponse.statusText === "OK"
+        ) {
+          mostrarNotificacion(
+            true,
+            "El turno se cancelo correctamente",
+            "verde"
+          );
         } else {
-          mostrarNotificacion(true, "Ocurrió un problema al intentar cancelar el turno", "rojo");
+          mostrarNotificacion(
+            true,
+            "Ocurrió un problema al intentar cancelar el turno",
+            "rojo"
+          );
         }
       }
     } catch (error) {
-      console.log("Error", error);
-      mostrarNotificacion(true, "Ocurrió un problema al intentar cancelar el turno", "rojo");
+      mostrarNotificacion(
+        true,
+        "Ocurrió un problema al intentar cancelar el turno",
+        "rojo"
+      );
     }
   };
 
@@ -260,16 +280,22 @@ export default function TurnosPaciente() {
 
     if (listado.length > 0) {
       if (especialidadSeleccionada !== -1) {
-        listado = listado.filter((turno) => especialidadSeleccionada === turno.especialidad);
+        listado = listado.filter(
+          (turno) => especialidadSeleccionada === turno.especialidad
+        );
       }
       if (prestadorSeleccionado !== -1) {
-        listado = listado.filter((turno) => prestadorSeleccionado === turno.prestadorCod);
+        listado = listado.filter(
+          (turno) => prestadorSeleccionado === turno.prestadorCod
+        );
       }
       if (filtroAsistidos !== -1) {
         listado = listado.filter((turno) => filtroAsistidos === turno.asistio);
       }
       if (filtroCancelados !== -1) {
-        listado = listado.filter((turno) => filtroCancelados === turno.aCancelar);
+        listado = listado.filter(
+          (turno) => filtroCancelados === turno.aCancelar
+        );
       }
     }
 
@@ -405,9 +431,9 @@ export default function TurnosPaciente() {
           {FiltrarTurnos(listadoTurnos).map((fila) => (
             <IonItem key={fila.nombre} className="fila">
               <IonCol className="celda" size="2.5">
-                <p>{`${dayjs(fila.fecha).format("DD/MM/YYYY")} ${dayjs(fila.hora).format(
-                  "HH:MM"
-                )}`}</p>
+                <p>{`${dayjs(fila.fecha).format("DD/MM/YYYY")} ${dayjs(
+                  fila.hora
+                ).format("HH:MM")}`}</p>
               </IonCol>
               <IonCol className="celda" size="3">
                 <p>{fila.prestadorNom}</p>
@@ -448,9 +474,11 @@ export default function TurnosPaciente() {
         titulo="Reservar turno"
         contenido={`Ha decidido cancelar el turno con el/la prestador/a ${
           turnoSeleccionado.prestadorNom
-        }, con especialidad en ${turnoSeleccionado.especialidadNom}, para el dia ${dayjs(
-          turnoSeleccionado.fecha
-        ).format("DD/MM/YYYY")}, a las ${dayjs(turnoSeleccionado.hora).format(
+        }, con especialidad en ${
+          turnoSeleccionado.especialidadNom
+        }, para el dia ${dayjs(turnoSeleccionado.fecha).format(
+          "DD/MM/YYYY"
+        )}, a las ${dayjs(turnoSeleccionado.hora).format(
           "HH:mm"
         )}, ¿Esta seguro/a de ello?`}
         abrirCerrarModal={abrirModalCancelarReserva}
@@ -469,13 +497,7 @@ export default function TurnosPaciente() {
         colorNotificacion={toast.tipo}
       />
 
-      {cargando && (
-        <IonBackdrop>
-          <div id="box">
-            <IonSpinner name="crescent" color="secondary" />
-          </div>
-        </IonBackdrop>
-      )}
+      {cargando && <LoadingBackdrop visualizar={cargando} />}
     </>
   );
 }

@@ -18,6 +18,8 @@ import {
 import { close, closeOutline } from "ionicons/icons";
 import "./HorariosPrestadores.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
+import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
+import CustomToast from "../../components/CustomToast/CustomToast";
 
 export default function HorariosPrestadores() {
   const [usuario, setUsuario] = useState({});
@@ -30,6 +32,17 @@ export default function HorariosPrestadores() {
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState(-1);
   const [prestadorSeleccionado, setPrestadorSeleccionado] = useState(-1);
   const [horario, setHorario] = useState(null);
+
+  const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
+  const mostrarNotificacion = (abrir, mensaje, tipo) => {
+    let notificacion = {};
+    if (abrir) {
+      notificacion = { open: true, mensaje: mensaje, tipo: tipo };
+    } else {
+      notificacion = { open: false, mensaje: "", tipo: "" };
+    }
+    setToast(notificacion);
+  };
   const history = useHistory();
 
   const traerHorariosPrestador = async (prestador) => {
@@ -61,10 +74,12 @@ export default function HorariosPrestadores() {
         setHorario(horarios);
       }
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar cargar los horarios del prestador",
+        "rojo"
+      );
     }
-    setCargando(false);
   };
 
   const traerEspecialidades = async (paciente) => {
@@ -95,10 +110,12 @@ export default function HorariosPrestadores() {
 
       setEspecialidades(especialidades);
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar cargar las especialidades registradas",
+        "rojo"
+      );
     }
-    setCargando(false);
   };
 
   const traerPrestadores = async (paciente) => {
@@ -130,13 +147,16 @@ export default function HorariosPrestadores() {
       setPrestadores(prestadores);
       setListadoPrestadores(prestadores);
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar cargar los/las prestadores/as registrados/as",
+        "rojo"
+      );
     }
-    setCargando(false);
   };
 
   useEffect(() => {
+    setCargando(true);
     try {
       const sesion = JSON.parse(sessionStorage.getItem("ppUL"));
       if (sesion !== {}) {
@@ -148,11 +168,13 @@ export default function HorariosPrestadores() {
         document.title = localStorage.getItem("tituloWeb");
       }
     } catch (e) {
-      history.push({ pathname: "/ErrorPage", motivo: "LostSesion" });
+      history.push({ pathname: "/ErrorPage" });
     }
+    setCargando(false);
   }, []);
 
   const handleChangeSelect = (value, select) => {
+    setCargando(true);
     switch (select) {
       case "Especialidad":
         setEspecialidadSeleccionada(value);
@@ -181,9 +203,10 @@ export default function HorariosPrestadores() {
         traerHorariosPrestador(value);
         break;
       default:
-        console.log("invalid type of select");
+        mostrarNotificacion(true, "Seleccion invalida", "rojo");
         break;
     }
+    setCargando(false);
   };
 
   return (
@@ -436,6 +459,14 @@ export default function HorariosPrestadores() {
           </IonGrid>
         </IonList>
       </div>
+
+      <CustomToast
+        openToast={toast.open}
+        onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
+        message={toast.mensaje}
+        colorNotificacion={toast.tipo}
+      />
+      {cargando && <LoadingBackdrop visualizar={cargando} />}
     </>
   );
 }

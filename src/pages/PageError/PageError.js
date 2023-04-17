@@ -1,34 +1,51 @@
 import React, { useEffect, useState } from "react";
 import "./PageError.css";
-import { Col, Row } from "react-flexbox-grid";
-import { Button, Grid, Typography } from "@material-ui/core";
-import { useNavigate } from "react-router-dom";
+import {
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonItem,
+  IonRow,
+  IonText,
+  IonThumbnail,
+} from "@ionic/react";
+import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
+import { useHistory } from "react-router";
+import { alert, alertOutline } from "ionicons/icons";
 
 const PageError = (props) => {
-  const { UsuarioLogueado, motivo } = props;
-  const navigate = useNavigate();
+  let { motivo } = props;
   const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
-    if (UsuarioLogueado === null && UsuarioLogueado !== undefined) {
-      if (JSON.parse(sessionStorage.getItem("HClgSS")) === null) {
-        setUsuario(JSON.parse(sessionStorage.getItem("HClgSS")));
-      } else setUsuario = null;
-    } else setUsuario(UsuarioLogueado);
+    setCargando(true);
+    try {
+      const sesion = JSON.parse(sessionStorage.getItem("ppUL"));
+      if (sesion !== {}) {
+        setUsuario(sesion);
+      } else {
+        motivo = "sesion perdida";
+      }
+    } catch (e) {
+      console.log("Error: " + e.message);
+    }
+    document.title = "Ha ocurrido un error: " + motivo;
+    setCargando(false);
   }, []);
 
   const handleClickRedirigir = (destino) => {
     switch (destino) {
       case "MainPage":
-        navigate({
-          pathname: "/MainPage",
-          Usuario: usuario,
-        });
+        history.push("/page/Main");
         break;
       case "CerrarSesion":
-        navigate({
-          pathname: "/",
-        });
+        history.push("/");
         break;
       default:
         break;
@@ -36,60 +53,66 @@ const PageError = (props) => {
   };
 
   return (
-    <Grid
-      container
-      className="fullSize"
-      direction="column"
-      justifyContent="center"
-      alignItems="center"
-      id="ERR404"
-    >
-      <Row className="ErrorViewRow" center="xs" middle="xs">
-        <Col xs={11} sm={7} md={6} lg={3}>
-          <Typography variant="h3">OH NO!</Typography>
-          <Typography variant="h5" align="center">
-            Se produjo un error
-          </Typography>
-          {motivo === "404" && usuario !== null ? (
-            <>
-              <Typography id="beforeTooLate" align="center">
-                <Button
-                  className="textLink"
-                  // onClick={(e) => handleClickRedirigir("MainPage")}
-                  onClick={(e) => handleClickRedirigir("CerrarSesion")}
-                >
-                  No se ha encontrado la pagina a la que se ha intentado
-                  acceder, le redirigiremos al login
-                </Button>
-              </Typography>
-            </>
-          ) : motivo === "whitOutUsuario" && usuario === null ? (
-            <>
-              <Typography id="beforeTooLate" variant="h5" align="center">
-                <Button
-                  className="textLink"
-                  onClick={(e) => handleClickRedirigir("CerrarSesion")}
-                >
-                  No encontramos su sesion de usuario por favor, inicie sesion
-                  de nuevo
-                </Button>
-              </Typography>
-            </>
-          ) : (
-            <>
-              <Typography id="beforeTooLate" variant="h5" align="center">
-                <Button
-                  className="textLink"
-                  onClick={(e) => handleClickRedirigir("CerrarSesion")}
-                >
-                  Al intentar cargar la pagina, por favor logueese nuevamente
-                </Button>
-              </Typography>
-            </>
-          )}
-        </Col>
-      </Row>
-    </Grid>
+    <IonGrid type="overlay" contentId="main">
+      <IonRow className="LoginViewRow justify-content-center">
+        <IonCol>
+          <IonCard>
+            <IonCardHeader>
+              <IonRow className="justify-content-center">
+                <IonCardTitle>
+                  <h1>Se ha producido un error</h1>
+                </IonCardTitle>
+              </IonRow>
+            </IonCardHeader>
+            <IonCardContent>
+              <IonItem>
+                <IonIcon
+                  slot="start"
+                  size="large"
+                  color="danger"
+                  ios={alertOutline}
+                  md={alert}
+                />
+                <IonText color="danger">
+                  {(!usuario || motivo === "sesion perdida") && (
+                    <>
+                      <h2>
+                        {"Tu sesion ha expirado "}
+                        <a href="/">
+                          presiona aqui para redireccionarte al login
+                        </a>
+                      </h2>
+                    </>
+                  )}
+                  {motivo === "404" && usuario?.codigo && (
+                    <>
+                      <h2>
+                        No sabemos como pero has llegado a una ventana
+                        inexitente\n
+                        <a href="/page/">
+                          presiona aqui para para redireccionarte a la pagina
+                          principal
+                        </a>
+                      </h2>
+                    </>
+                  )}
+                </IonText>
+                <IonIcon
+                  slot="end"
+                  size="large"
+                  color="danger"
+                  ios={alertOutline}
+                  md={alert}
+                />
+              </IonItem>
+            </IonCardContent>
+          </IonCard>
+        </IonCol>
+      </IonRow>
+
+      {cargando && <LoadingBackdrop visualizar={cargando} />}
+    </IonGrid>
   );
 };
+
 export default PageError;

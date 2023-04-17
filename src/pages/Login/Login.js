@@ -31,8 +31,10 @@ import StyledButton from "../../components/StyledButton/StyledButton";
 import NuevoPaciente from "../NuevoPaciente/NuevoPaciente";
 import "./login.css";
 import CustomToast from "../../components/CustomToast/CustomToast";
+import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 
 const LoginIonic = () => {
+  const [cargando, setCargando] = useState(false);
   const [blnVerPassword, setBlnVerPassword] = useState(false);
   const [usuario, setUsuario] = useState({
     usuario: "",
@@ -44,7 +46,6 @@ const LoginIonic = () => {
   const [errorUsuario, setErrorUsuario] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [msjErrorPassword, setMsjErrorPassword] = useState("");
-  const [cargandoLogin, setCargandoLogin] = useState(false);
   const [registrarPaciente, setRegistrarPaciente] = useState(false);
   const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
   const mostrarNotificacion = (abrir, mensaje, tipo) => {
@@ -82,7 +83,11 @@ const LoginIonic = () => {
       console.error("Error en petición loginPaciente", error.response);
       setErrorPassword(true);
       setMsjErrorPassword("Usuario o Password incorrecto");
-      mostrarNotificacion(true, "Se produjo un error al intentar generar la sesion", "rojo");
+      mostrarNotificacion(
+        true,
+        "Se produjo un error al intentar generar la sesion",
+        "rojo"
+      );
     }
   };
 
@@ -91,7 +96,10 @@ const LoginIonic = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const response = await axios.get(`${urlAxio}Pacientes?documento=${documento}`, config);
+      const response = await axios.get(
+        `${urlAxio}Pacientes?documento=${documento}`,
+        config
+      );
       const data = response.data[0];
       return {
         usuario: usuario.usuario,
@@ -123,15 +131,16 @@ const LoginIonic = () => {
   };
 
   const handleClickLogin = async () => {
-    setCargandoLogin(true);
+    setCargando(true);
     if (usuario.usuario !== "" && usuario.password !== "") {
       const token = await loginPaciente(usuario.usuario, usuario.password);
       const paciente = await obtenerPaciente(token, usuario.usuario);
-      setCargandoLogin(false);
-      setUsuario(paciente);
-      mostrarNotificacion(true, "Sesión iniciada correctamente", "verde");
-      sessionStorage.setItem("ppUL", JSON.stringify(paciente));
-      history.push("/page/");
+      if (paciente) {
+        mostrarNotificacion(true, "Sesión iniciada correctamente", "verde");
+        setUsuario(paciente);
+        sessionStorage.setItem("ppUL", JSON.stringify(paciente));
+        history.push("/page/");
+      }
     } else {
       if (usuario.usuario !== "") setErrorUsuario(true);
       if (usuario.password !== "") {
@@ -139,13 +148,13 @@ const LoginIonic = () => {
         setMsjErrorPassword("Debe ingresar su contraseña");
       }
     }
-    setCargandoLogin(false);
+    setCargando(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setCargandoLogin(true);
+  const handleClickSubmit = () => {
+    setCargando(true);
     handleClickLogin();
+    setCargando(false);
   };
 
   const handleChangeUsuario = (e) => {
@@ -190,8 +199,13 @@ const LoginIonic = () => {
                     id="btnHelpNrodocumento"
                     size="small"
                   />
-                  <IonPopover trigger="btnHelpNrodocumento" triggerAction="click">
-                    <IonContent class="ion-padding">Solo se aceptan valores numericos</IonContent>
+                  <IonPopover
+                    trigger="btnHelpNrodocumento"
+                    triggerAction="click"
+                  >
+                    <IonContent class="ion-padding">
+                      Solo se aceptan valores numericos
+                    </IonContent>
                   </IonPopover>
                   <IonInput
                     value={usuario.usuario}
@@ -199,9 +213,18 @@ const LoginIonic = () => {
                     autofocus
                     inputMode="numeric"
                   />
-                  <IonIcon aria-hidden="true" slot="end" ios={personOutline} md={person} />
+                  <IonIcon
+                    aria-hidden="true"
+                    slot="end"
+                    ios={personOutline}
+                    md={person}
+                  />
                 </IonItem>
-                <IonItem lines="none" fill="solid" className={`${errorPassword && "ion-invalid"}`}>
+                <IonItem
+                  lines="none"
+                  fill="solid"
+                  className={`${errorPassword && "ion-invalid"}`}
+                >
                   <IonLabel position="floating">Contraseña</IonLabel>
                   <IonIcon
                     aria-hidden="true"
@@ -213,7 +236,8 @@ const LoginIonic = () => {
                   />
                   <IonPopover trigger="btnHelpPassword" triggerAction="click">
                     <IonContent class="ion-padding">
-                      Si es su primera vez ingresando, ingrese su numero de documento
+                      Si es su primera vez ingresando, ingrese su numero de
+                      documento
                     </IonContent>
                   </IonPopover>
                   <IonInput
@@ -235,7 +259,7 @@ const LoginIonic = () => {
                 lines="none"
                 size="large"
                 className="violeta justify-content-center"
-                onClick={handleSubmit}
+                onClick={handleClickSubmit}
               >
                 Ingresar
               </StyledButton>
@@ -264,6 +288,8 @@ const LoginIonic = () => {
         message={toast.mensaje}
         colorNotificacion={toast.tipo}
       />
+
+      {cargando && <LoadingBackdrop visualizar={cargando} />}
     </IonGrid>
   );
 };

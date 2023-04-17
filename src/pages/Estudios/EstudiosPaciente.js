@@ -20,8 +20,6 @@ import {
   IonList,
   IonModal,
   IonRow,
-  IonSelect,
-  IonSelectOption,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
@@ -36,6 +34,8 @@ import "./EstudiosPaciente.css";
 
 import { Document, Page, pdfjs } from "react-pdf";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
+import CustomToast from "../../components/CustomToast/CustomToast";
+import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function EstudiosPaciente() {
@@ -53,6 +53,17 @@ export default function EstudiosPaciente() {
     doc: {},
   });
   const [abrirModal, setAbrirModal] = useState(false);
+
+  const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
+  const mostrarNotificacion = (abrir, mensaje, tipo) => {
+    let notificacion = {};
+    if (abrir) {
+      notificacion = { open: true, mensaje: mensaje, tipo: tipo };
+    } else {
+      notificacion = { open: false, mensaje: "", tipo: "" };
+    }
+    setToast(notificacion);
+  };
   const history = useHistory();
 
   const abrirCerrarModal = () => setAbrirModal(!abrirModal);
@@ -90,14 +101,16 @@ export default function EstudiosPaciente() {
       });
       setListadoEstudiosFiltro(Estudios);
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar consultar los estudios",
+        "rojo"
+      );
     }
-
-    setCargando(false);
   };
 
   const FiltrarEstudios = (value) => {
+    setCargando(true);
     if (value !== -1) {
       let listado = [];
 
@@ -112,6 +125,7 @@ export default function EstudiosPaciente() {
       setEstudioSel(value);
       setListadoEstudiosFiltrados(listadoEstudios);
     }
+    setCargando(false);
   };
 
   const BuscarEstudio = async (estudio, pdfDoc, pdfUrl) => {
@@ -144,29 +158,37 @@ export default function EstudiosPaciente() {
         }
       }
     } catch (error) {
-      console.log("Error");
-      console.log(error.response);
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar buscar el estudio seleccionado",
+        "rojo"
+      );
     }
 
     return null;
   };
 
   const DescargarPdf = (estudio) => {
+    setCargando(true);
     if (estudio) {
       BuscarEstudio(estudio, true, false);
     } else {
-      console.log("Estudio sin archivo guardado");
+      mostrarNotificacion(true, "Estudio sin archivo guardado", "rojo");
     }
+    setCargando(false);
   };
   const VisualizarPdf = (estudio) => {
+    setCargando(true);
     if (estudio) {
       BuscarEstudio(estudio, false, true);
     } else {
-      console.log("Estudio sin archivo guardado");
+      mostrarNotificacion(true, "Estudio sin archivo guardado", "rojo");
     }
+    setCargando(false);
   };
 
   useEffect(() => {
+    setCargando(true);
     try {
       const sesion = JSON.parse(sessionStorage.getItem("ppUL"));
       if (sesion !== {}) {
@@ -177,8 +199,9 @@ export default function EstudiosPaciente() {
         document.title = localStorage.getItem("tituloWeb");
       }
     } catch (e) {
-      history.push({ pathname: "/ErrorPage", motivo: "LostSesion" });
+      history.push({ pathname: "/ErrorPage" });
     }
+    setCargando(false);
   }, []);
 
   //cosas para el modal
@@ -291,6 +314,13 @@ export default function EstudiosPaciente() {
           )}
         </IonContent>
       </IonModal>
+      <CustomToast
+        openToast={toast.open}
+        onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
+        message={toast.mensaje}
+        colorNotificacion={toast.tipo}
+      />
+      {cargando && <LoadingBackdrop visualizar={cargando} />}
     </>
   );
 }

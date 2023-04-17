@@ -4,15 +4,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import {
-  IonAccordion,
-  IonAccordionGroup,
   IonCol,
-  IonContent,
   IonDatetime,
   IonGrid,
-  IonIcon,
   IonItem,
-  IonLabel,
   IonList,
   IonListHeader,
   IonRow,
@@ -24,6 +19,7 @@ import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplega
 import StyledButton from "../../components/StyledButton/StyledButton";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
+import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 
 export default function NuevoTurno() {
   const [usuario, setUsuario] = useState({});
@@ -39,7 +35,8 @@ export default function NuevoTurno() {
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
   const [turnosDisponibles, setTurnosDisponibles] = useState([]);
   const [turnoSeleccionado, setTurnoSeleccionado] = useState({});
-  const [abrirModalConfirmarReserva, setAbrirModalConfirmarReserva] = useState(false);
+  const [abrirModalConfirmarReserva, setAbrirModalConfirmarReserva] =
+    useState(false);
   const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
   const mostrarNotificacion = (abrir, mensaje, tipo) => {
     let notificacion = {};
@@ -68,7 +65,9 @@ export default function NuevoTurno() {
         especialidades = null;
       }
 
-      especialidades = especialidades.filter((especialidad) => especialidad.vigente === true);
+      especialidades = especialidades.filter(
+        (especialidad) => especialidad.vigente === true
+      );
 
       especialidades = especialidades.map((especialidad) => {
         return {
@@ -79,14 +78,12 @@ export default function NuevoTurno() {
 
       setEspecialidades(especialidades);
     } catch (e) {
-      console.log("Error");
       mostrarNotificacion(
         true,
         "Se produjo un error al consultar las especialidades registradas en el sistema",
         "rojo"
       );
     }
-    setCargando(false);
   };
 
   const traerPrestadores = async (paciente) => {
@@ -104,7 +101,9 @@ export default function NuevoTurno() {
         prestadores = null;
       }
 
-      prestadores = prestadores.filter((prestador) => prestador.vigente === true);
+      prestadores = prestadores.filter(
+        (prestador) => prestador.vigente === true
+      );
 
       prestadores = prestadores.map((prestador) => {
         return {
@@ -116,17 +115,16 @@ export default function NuevoTurno() {
       setPrestadores(prestadores);
       setListadoPrestadores(prestadores);
     } catch (e) {
-      console.log("Error");
       mostrarNotificacion(
         true,
         "Se produjo un error al consultar los prestadores registrados en el sistema",
         "rojo"
       );
     }
-    setCargando(false);
   };
 
   useEffect(() => {
+    setCargando(true);
     try {
       const sesion = JSON.parse(sessionStorage.getItem("ppUL"));
       if (sesion !== {}) {
@@ -138,8 +136,9 @@ export default function NuevoTurno() {
         document.title = localStorage.getItem("tituloWeb");
       }
     } catch (e) {
-      history.push({ pathname: "/ErrorPage", motivo: "LostSesion" });
+      history.push({ pathname: "/ErrorPage" });
     }
+    setCargando(false);
   }, []);
 
   const obtenerHorariosFechaSeleccionada = async (fecha) => {
@@ -147,13 +146,15 @@ export default function NuevoTurno() {
       headers: { Authorization: `Bearer ${usuario.token}` },
     };
 
-    const servicio = await axios.get(`${urlAxio}Servicios`, config).then((response) => {
-      if (response.data.length !== 0) {
-        return response.data[0];
-      } else {
-        return null;
-      }
-    });
+    const servicio = await axios
+      .get(`${urlAxio}Servicios`, config)
+      .then((response) => {
+        if (response.data.length !== 0) {
+          return response.data[0];
+        } else {
+          return null;
+        }
+      });
 
     try {
       let [fechas, agenda] = await Promise.all([
@@ -164,9 +165,9 @@ export default function NuevoTurno() {
         axios.get(
           `${urlAxio}Turnos/TurnosPrestadorFecha/?prestador=${prestadorSeleccionado}&desde=${dayjs(
             fecha
-          ).format("YYYY/MM/DD")}&hasta=${dayjs(fecha).format("YYYY/MM/DD")}&servicio=${
-            servicio.codigo
-          }`,
+          ).format("YYYY/MM/DD")}&hasta=${dayjs(fecha).format(
+            "YYYY/MM/DD"
+          )}&servicio=${servicio.codigo}`,
           config
         ),
       ]);
@@ -174,9 +175,12 @@ export default function NuevoTurno() {
       if (fechaSeleccionada.length !== 0) {
         fechaSeleccionada = fechaSeleccionada.filter(
           (turno) =>
-            dayjs(new Date(turno.fecha)).format("YYYY/MM/DD") === dayjs(fecha).format("YYYY/MM/DD")
+            dayjs(new Date(turno.fecha)).format("YYYY/MM/DD") ===
+            dayjs(fecha).format("YYYY/MM/DD")
         );
-        fechaSeleccionada = fechaSeleccionada.filter((turno) => turno.feriado === false);
+        fechaSeleccionada = fechaSeleccionada.filter(
+          (turno) => turno.feriado === false
+        );
         fechaSeleccionada = fechaSeleccionada.filter(
           (turno) => turno.mutualCantDado < turno.mutualCupo
         );
@@ -186,26 +190,49 @@ export default function NuevoTurno() {
 
       if (fechaSeleccionada.length !== 0 && agenda.data.length !== 0) {
         const agendaDelDia = agenda.data.filter(
-          (dia) => dia.fecha === fechaSeleccionada[0].fecha && dia.paciente === 0 && !dia.cancelado
+          (dia) =>
+            dia.fecha === fechaSeleccionada[0].fecha &&
+            dia.paciente === 0 &&
+            !dia.cancelado
         );
         if (agendaDelDia.length > 0) {
           setTurnosDisponibles(agendaDelDia);
         } else {
-          mostrarNotificacion(true, "No hay turnos disponibles para el dia indicado", "amarillo");
+          mostrarNotificacion(
+            true,
+            "No hay turnos disponibles para el dia indicado",
+            "amarillo"
+          );
         }
       } else {
-        mostrarNotificacion(true, "No hay turnos disponibles para el dia indicado", "amarillo");
+        mostrarNotificacion(
+          true,
+          "No hay turnos disponibles para el dia indicado",
+          "amarillo"
+        );
       }
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(true,"Ha ocurrido un error al intentar cargar los turnos disponibles para la fecha indicada", "rojo")
     }
   };
 
-  const obtenerTurnosProximos = async (prestador, config, horarios, atiende) => {
+  const obtenerTurnosProximos = async (
+    prestador,
+    config,
+    horarios,
+    atiende
+  ) => {
     const turnosFiltradosPorRestriccion = [];
     const turnosProximos = [];
-    const diasSemana = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
+    const diasSemana = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miercoles",
+      "Jueves",
+      "Viernes",
+      "Sabado",
+    ];
     try {
       const response = await axios.get(
         `${urlAxio}Turnos/TurnosPrestadorFechaFuturo?prestador=${prestador}&mutual=${usuario.mutual}`,
@@ -215,7 +242,8 @@ export default function NuevoTurno() {
       const listadoTurnos = response.data.filter(
         (turno) =>
           turno.feriado === false &&
-          (dayjs(turno.fecha).isSame(new dayjs()) || dayjs(turno.fecha).isAfter(new dayjs()))
+          (dayjs(turno.fecha).isSame(new dayjs()) ||
+            dayjs(turno.fecha).isAfter(new dayjs()))
       );
 
       if (listadoTurnos.length > 0) {
@@ -224,37 +252,58 @@ export default function NuevoTurno() {
             const diaSemana = dayjs(turno.fecha).get("d");
             switch (diasSemana[diaSemana]) {
               case "Domingo":
-                if (atiende.length === 0 || turno.mutualCantDado < atiende[0].domingo) {
+                if (
+                  atiende.length === 0 ||
+                  turno.mutualCantDado < atiende[0].domingo
+                ) {
                   turnosFiltradosPorRestriccion.push(turno);
                 }
                 break;
               case "Lunes":
-                if (atiende.length === 0 || turno.mutualCantDado < atiende[0].lunes) {
+                if (
+                  atiende.length === 0 ||
+                  turno.mutualCantDado < atiende[0].lunes
+                ) {
                   turnosFiltradosPorRestriccion.push(turno);
                 }
                 break;
               case "Martes":
-                if (atiende === [] || turno.mutualCantDado < atiende[0].martes) {
+                if (
+                  atiende === [] ||
+                  turno.mutualCantDado < atiende[0].martes
+                ) {
                   turnosFiltradosPorRestriccion.push(turno);
                 }
                 break;
               case "Miercoles":
-                if (atiende.length === 0 || turno.mutualCantDado < atiende[0].miercoles) {
+                if (
+                  atiende.length === 0 ||
+                  turno.mutualCantDado < atiende[0].miercoles
+                ) {
                   turnosFiltradosPorRestriccion.push(turno);
                 }
                 break;
               case "Jueves":
-                if (atiende.length === 0 || turno.mutualCantDado < atiende[0].jueves) {
+                if (
+                  atiende.length === 0 ||
+                  turno.mutualCantDado < atiende[0].jueves
+                ) {
                   turnosFiltradosPorRestriccion.push(turno);
                 }
                 break;
               case "Viernes":
-                if (atiende.length === 0 || turno.mutualCantDado < atiende[0].viernes) {
+                if (
+                  atiende.length === 0 ||
+                  turno.mutualCantDado < atiende[0].viernes
+                ) {
                   turnosFiltradosPorRestriccion.push(turno);
                 }
                 break;
               case "Sabado":
-                if (atiende.length === 0 || turno.mutualCantDado < atiende[0].sabado) {
+                if (
+                  atiende.length === 0 ||
+                  turno.mutualCantDado < atiende[0].sabado
+                ) {
                   turnosFiltradosPorRestriccion.push(turno);
                 }
                 break;
@@ -263,7 +312,9 @@ export default function NuevoTurno() {
             }
           });
         } else {
-          listadoTurnos.forEach((turno) => turnosFiltradosPorRestriccion.push(turno));
+          listadoTurnos.forEach((turno) =>
+            turnosFiltradosPorRestriccion.push(turno)
+          );
         }
       }
 
@@ -362,7 +413,6 @@ export default function NuevoTurno() {
         });
       }
     } catch (e) {
-      console.log("Error");
       mostrarNotificacion(
         true,
         "Se produjo un error al intentar consultar los turnos libres para el prestador en la fecha seleccionada",
@@ -382,13 +432,15 @@ export default function NuevoTurno() {
       headers: { Authorization: `Bearer ${usuario.token}` },
     };
 
-    const servicio = await axios.get(`${urlAxio}Servicios`, config).then((response) => {
-      if (response.data.length !== 0) {
-        return response.data[0];
-      } else {
-        return null;
-      }
-    });
+    const servicio = await axios
+      .get(`${urlAxio}Servicios`, config)
+      .then((response) => {
+        if (response.data.length !== 0) {
+          return response.data[0];
+        } else {
+          return null;
+        }
+      });
 
     try {
       const [horariosResponse, atiendeResponse] = await Promise.all([
@@ -402,21 +454,30 @@ export default function NuevoTurno() {
         ),
       ]);
 
-      horarios = horariosResponse.data.length !== 0 ? horariosResponse.data : null;
+      horarios =
+        horariosResponse.data.length !== 0 ? horariosResponse.data : null;
       atiende =
         atiendeResponse.data.length !== 0
           ? atiendeResponse.data.filter((a) => a.mutual === usuario.mutual)
           : [];
 
       if (!horarios || !horarios[0]?.prestador) {
-        mostrarNotificacion(true, "El prestador seleccionado no tiene un horario definido", "rojo");
+        mostrarNotificacion(
+          true,
+          "El prestador seleccionado no tiene un horario definido",
+          "rojo"
+        );
       } else {
-        turnosProximos = await obtenerTurnosProximos(prestador, config, horarios[0], atiende);
+        turnosProximos = await obtenerTurnosProximos(
+          prestador,
+          config,
+          horarios[0],
+          atiende
+        );
       }
       setFechasFuturas(turnosProximos);
       setFechaSeleccionada(turnosProximos[0].date);
     } catch (e) {
-      console.log("Error");
       mostrarNotificacion(
         true,
         "Se produjo un error al intentar consultar los horarios disponibles del prestador",
@@ -453,19 +514,34 @@ export default function NuevoTurno() {
           config
         );
 
-        if (actualizarTurnoResponse.status === 200 && actualizarTurnoResponse.statusText === "OK") {
-          mostrarNotificacion(true, "El turno se reservó correctamente", "verde");
+        if (
+          actualizarTurnoResponse.status === 200 &&
+          actualizarTurnoResponse.statusText === "OK"
+        ) {
+          mostrarNotificacion(
+            true,
+            "El turno se reservó correctamente",
+            "verde"
+          );
         } else {
-          mostrarNotificacion(true, "Ocurrió un problema al intentar reservar el turno", "rojo");
+          mostrarNotificacion(
+            true,
+            "Ocurrió un problema al intentar reservar el turno",
+            "rojo"
+          );
         }
       }
     } catch (error) {
-      console.log("Error", error);
-      mostrarNotificacion(true, "Ocurrió un problema al intentar reservar el turno", "rojo");
+      mostrarNotificacion(
+        true,
+        "Ocurrió un problema al intentar reservar el turno",
+        "rojo"
+      );
     }
   };
 
   const handleChangeSelect = (value, select) => {
+    setCargando(true);
     switch (select) {
       case "Especialidad":
         setEspecialidadSeleccionada(value);
@@ -489,9 +565,10 @@ export default function NuevoTurno() {
         traerHorariosAtencion(value);
         break;
       default:
-        console.log("invalid type of select");
+        mostrarNotificacion(true,"Seleccion invalida", "rojo")
         break;
     }
+    setCargando(false);
   };
 
   const HabilitarFecha = (date) => {
@@ -517,12 +594,13 @@ export default function NuevoTurno() {
     togleAbrirCerrarConfirmarReserva();
   };
 
-  const handleClickConfirmarHacerReserva = () => {
-    actualizarTurno().then(() => {
-      togleAbrirCerrarConfirmarReserva();
-      setFechaSeleccionada("");
-      setTurnosDisponibles([]);
-    });
+  const handleClickConfirmarHacerReserva = async () => {
+    setCargando(true);
+    await actualizarTurno();
+    togleAbrirCerrarConfirmarReserva();
+    setFechaSeleccionada("");
+    setTurnosDisponibles([]);
+    setCargando(false);
   };
 
   return (
@@ -583,14 +661,20 @@ export default function NuevoTurno() {
                   <IonList lines="none">
                     <IonListHeader>
                       <h5>
-                        Horarios disponibles para: {dayjs(fechaSeleccionada).format("DD/MM/YYYY")}
+                        Horarios disponibles para:{" "}
+                        {dayjs(fechaSeleccionada).format("DD/MM/YYYY")}
                       </h5>
                     </IonListHeader>
 
                     <IonGrid>
                       <IonRow>
                         {turnosDisponibles.map((turno) => (
-                          <IonCol sizeXs="12" sizeMd="6" sizeLg="3" key={turno.codigo}>
+                          <IonCol
+                            sizeXs="12"
+                            sizeMd="6"
+                            sizeLg="3"
+                            key={turno.codigo}
+                          >
                             <StyledButton
                               expand="block"
                               className="blanco"
@@ -614,9 +698,11 @@ export default function NuevoTurno() {
         titulo="Reservar turno"
         contenido={`Ha seleccionado el turno con el/la prestador/a ${
           turnoSeleccionado.prestadorNom
-        }, con especialidad en ${turnoSeleccionado.especialidadNom}, para el dia ${dayjs(
-          turnoSeleccionado.fecha
-        ).format("DD/MM/YYYY")}, a las ${dayjs(turnoSeleccionado.hora).format(
+        }, con especialidad en ${
+          turnoSeleccionado.especialidadNom
+        }, para el dia ${dayjs(turnoSeleccionado.fecha).format(
+          "DD/MM/YYYY"
+        )}, a las ${dayjs(turnoSeleccionado.hora).format(
           "HH:mm"
         )}, ¿es esto correcto?`}
         abrirCerrarModal={abrirModalConfirmarReserva}
@@ -634,6 +720,7 @@ export default function NuevoTurno() {
         message={toast.mensaje}
         colorNotificacion={toast.tipo}
       />
+      {cargando && <LoadingBackdrop visualizar={cargando} />}
     </>
   );
 }

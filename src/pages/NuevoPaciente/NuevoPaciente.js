@@ -31,9 +31,11 @@ import React, { useEffect, useState } from "react";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
+import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 import StyledButton from "../../components/StyledButton/StyledButton";
 
 const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
+  const [cargando, setCargando] = useState(false);
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [correo, setCorreo] = useState("");
@@ -57,7 +59,8 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
     tipoDoc: false,
     mutual: false,
   });
-  const [abrirModalCancelarRegistro, setAbrirModalCancelarRegistro] = useState(false);
+  const [abrirModalCancelarRegistro, setAbrirModalCancelarRegistro] =
+    useState(false);
 
   const traerTiposDocs = async () => {
     let tiposDocs = null;
@@ -80,8 +83,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
 
       setTiposDoc(tiposDocs);
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(true,"Ha ocurrido un error al intentar cargar los tipos de documentos", "rojo")
     }
   };
 
@@ -106,8 +108,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
 
       setMutuales(mutuales);
     } catch (e) {
-      console.log("Error");
-      console.log(e.response);
+      mostrarNotificacion(true,"Ha ocurrido un error al intentar cargar las mutuales registradas", "rojo")
     }
   };
 
@@ -125,7 +126,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
         setTipoDoc(value);
         break;
       default:
-        console.log("invalid type of select");
+        mostrarNotificacion(true,"Seleccion invalida", "rojo")
         break;
     }
   };
@@ -162,7 +163,11 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
       pasa = false;
       errors.telefono = true;
     }
-    if (nroDocumento === "" || nroDocumento === null || nroDocumento === undefined) {
+    if (
+      nroDocumento === "" ||
+      nroDocumento === null ||
+      nroDocumento === undefined
+    ) {
       pasa = false;
       errors.nroDocumento = true;
     }
@@ -186,7 +191,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
       errors.mutual = true;
     }
     if (
-      (mutualAfiliado === "" || mutualAfiliado === null || mutualAfiliado === undefined) &&
+      (mutualAfiliado === "" ||
+        mutualAfiliado === null ||
+        mutualAfiliado === undefined) &&
       mutual.codigo !== 1
     ) {
       pasa = false;
@@ -212,7 +219,10 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
             hc: nroDocumento,
             documentoNro: nroDocumento,
             documentoTipo: tipoDoc,
-            documentoTipoNombre: getTextoDesplegableSeleccionado(tiposDoc, tipoDoc),
+            documentoTipoNombre: getTextoDesplegableSeleccionado(
+              tiposDoc,
+              tipoDoc
+            ),
             nombre: nombre,
             apellido: apellido,
             mutual: mutual,
@@ -227,12 +237,17 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
         );
         if (response) {
           if (response.status === 200) {
-            mostrarNotificacion(true, "Usuario registrado correctamente", "verde");
+            mostrarNotificacion(
+              true,
+              "Usuario registrado correctamente",
+              "verde"
+            );
           }
           if (response.status === 400) {
             mostrarNotificacion(
               true,
-              "No se ha podido registrar el nuevo usuario debido a: " + response,
+              "No se ha podido registrar el nuevo usuario debido a: " +
+                response,
               "rojo"
             );
           }
@@ -252,15 +267,34 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
         "Ocurrio algun problema al intentar registrar el nuevo usuario, por favor reintente mas tarde",
         "rojo"
       );
-      console.log(e);
     }
+  };
+
+  const limpiarCampos = () => {
+    setNombre("");
+    setApellido("");
+    setFechaNac("");
+    setTipoDoc(-1);
+    setNroDocumento("");
+    setMutual(-1);
+    setMutualAfiliado("");
+    setTelefono("");
+    setCorreo("");
   };
 
   const togleAbrirCerrarCancelarRegistro = () => {
     setAbrirModalCancelarRegistro(!abrirModalCancelarRegistro);
   };
+
   const confirmarCancelarRegistro = () => {
-    setAbrirModalCancelarRegistro(false);
+    togleAbrirCerrarCancelarRegistro();
+    limpiarCampos();
+    closeModal();
+  };
+
+  const handleClickRegistrarPaciente = () => {
+    registrarPaciente();
+    limpiarCampos();
     closeModal();
   };
   // agregar metodos modal confirmacion y cierre de ventana
@@ -295,7 +329,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorNombre" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso el nombre</IonContent>
+                  <IonContent class="ion-padding">
+                    No se ingreso el nombre
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -320,7 +356,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorApellido" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso el apellido</IonContent>
+                  <IonContent class="ion-padding">
+                    No se ingreso el apellido
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -333,7 +371,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label-placement="floating"
               value={fechaNac}
               onIonChange={(e) => setFechaNac(e.target.value)}
-              min={dayjs(new dayjs()).subtract(110, "year").format("YYYY-MM-DD")}
+              min={dayjs(new dayjs())
+                .subtract(110, "year")
+                .format("YYYY-MM-DD")}
               max={dayjs(new dayjs()).format("YYYY-MM-DD")}
               className={`${errores.fechaNac && "ion-invalid"}`}
             />
@@ -380,7 +420,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorTipoDoc" triggerAction="click">
-                  <IonContent class="ion-padding">No se selecciono un tipo de documento</IonContent>
+                  <IonContent class="ion-padding">
+                    No se selecciono un tipo de documento
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -405,8 +447,13 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   size="small"
                   color="danger"
                 />
-                <IonPopover trigger="btnErrorNroDocumento" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso un numero de documento</IonContent>
+                <IonPopover
+                  trigger="btnErrorNroDocumento"
+                  triggerAction="click"
+                >
+                  <IonContent class="ion-padding">
+                    No se ingreso un numero de documento
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -445,7 +492,10 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   size="small"
                   color="danger"
                 />
-                <IonPopover trigger="btnErrorMutualAfiliado" triggerAction="click">
+                <IonPopover
+                  trigger="btnErrorMutualAfiliado"
+                  triggerAction="click"
+                >
                   <IonContent class="ion-padding">
                     No se ingreso un numero de afiliado, en caso de no tener
                   </IonContent>
@@ -476,7 +526,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorTelefono" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso un telefono de contacto</IonContent>
+                  <IonContent class="ion-padding">
+                    No se ingreso un telefono de contacto
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -523,13 +575,14 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
             <StyledButton
               lines="none"
               className="verde  ion-padding-horizontal"
-              onClick={registrarPaciente}
+              onClick={handleClickRegistrarPaciente}
             >
               Registrarme
             </StyledButton>
           </IonRow>
         </IonToolbar>
       </IonFooter>
+
       <DialogoConfirmacion
         titulo="Cancelar registro"
         contenido="¿Esta seguro de cancelar el registro? Se perderan los datos que haya cargado"
@@ -541,6 +594,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
         textoBotonNo="Cancelar"
         textoBotonSi="Estoy seguro"
       />
+      {cargando && <LoadingBackdrop visualizar={cargando} />}
     </IonModal>
   );
 };

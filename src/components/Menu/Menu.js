@@ -10,7 +10,7 @@ import {
   IonNote,
 } from "@ionic/react";
 
-import { useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import {
   calendarOutline,
   calendar,
@@ -64,9 +64,13 @@ const appPages = [
 const Menu = () => {
   const location = useLocation();
   const [usuario, setUsuario] = useState({});
-
+  const history = useHistory();
   useEffect(() => {
-    setUsuario(JSON.parse(sessionStorage.getItem("ppUL")));
+    try {
+      setUsuario(JSON.parse(sessionStorage.getItem("ppUL")));
+    } catch {
+      history.push({ pathname: "/ErrorPage" });
+    }
   }, []);
 
   return (
@@ -81,7 +85,9 @@ const Menu = () => {
             return (
               <IonMenuToggle key={index} autoHide={false}>
                 <IonItem
-                  className={location.pathname === appPage.url ? "selected" : ""}
+                  className={
+                    location.pathname === appPage.url ? "selected" : ""
+                  }
                   routerLink={appPage.url}
                   routerDirection="none"
                   lines="none"
@@ -102,7 +108,12 @@ const Menu = () => {
         <IonList id="inbox-list">
           <IonItem button fill="solid" lines="none" routerLink={"/"}>
             <IonLabel color="danger">Cerrar Sesion</IonLabel>
-            <IonIcon aria-hidden="true" slot="end" ios={logOutOutline} md={logOut} />
+            <IonIcon
+              aria-hidden="true"
+              slot="end"
+              ios={logOutOutline}
+              md={logOut}
+            />
           </IonItem>
         </IonList>
       </IonContent>

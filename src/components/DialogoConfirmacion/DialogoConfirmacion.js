@@ -71,7 +71,6 @@ export default function DialogoConfirmacion({
           cssClass: botonSi.clase,
         },
       ]}
-      onDidDismiss={({ detail }) => console.log(detail)}
     />
   );
 }
