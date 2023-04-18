@@ -330,173 +330,186 @@ export default function TurnosPaciente() {
   };
 
   const handleClickCancelarReserva = async () => {
+    togleAbrirCerrarCancelarReserva();
     setCargando(true);
     await CancelarTurno();
-    togleAbrirCerrarCancelarReserva();
     await traerTurnosPaciente(usuario);
     setCargando(false);
   };
   return (
     <>
-      {/*Desplegable con filtros*/}
-      <IonAccordionGroup expand="inset">
-        <IonAccordion value={"a"}>
-          <IonItem slot="header" color="light">
-            <IonLabel>Filtrar</IonLabel>
-          </IonItem>
-          <div slot="content">
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12" size-md="6">
-                  <IonItem>
-                    <CustomDesplegable
-                      array={especialidades}
-                      value={especialidadSeleccionada}
-                      handleChange={handleChangeSelect}
-                      mostrarTodos={true}
-                      label={"Seleccione un tipo de especialidad"}
-                      id="Especialidad"
-                    />
-                  </IonItem>
-                </IonCol>
-
-                <IonCol size="12" size-md="6">
-                  <IonItem>
-                    <CustomDesplegable
-                      array={listadoPrestadores}
-                      value={prestadorSeleccionado}
-                      handleChange={handleChangeSelect}
-                      mostrarTodos={true}
-                      label={"Seleccione un prestador"}
-                      id="Prestador"
-                    />
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-              <IonRow>
-                <IonCol size="12" size-md="6">
-                  <IonItem>
-                    <CustomDesplegable
-                      array={cancelados}
-                      value={filtroCancelados}
-                      handleChange={handleChangeSelect}
-                      mostrarTodos={true}
-                      label={"Cancelados"}
-                      id="Cancelados"
-                    />
-                  </IonItem>
-                </IonCol>
-
-                <IonCol size="12" size-md="6">
-                  <IonItem>
-                    <CustomDesplegable
-                      array={asistidos}
-                      value={filtroAsistidos}
-                      handleChange={handleChangeSelect}
-                      mostrarTodos={true}
-                      label={"Asistidos"}
-                      id="Asistidos"
-                    />
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </div>
-        </IonAccordion>
-      </IonAccordionGroup>
-
-      {/* Tabla */}
-      <IonList lines="none">
+      {listadoTurnos.length <= 0 ? (
         <IonGrid>
-          <IonItem className="fila cabecera">
-            <IonCol className="celda cabecera" size="2.5">
-              <p>Fecha</p>
+          <IonRow className="ion-justify-content-center">
+            <IonCol>
+              <div class="ion-text-center">
+                <p>No tiene turnos registrados</p>
+              </div>
             </IonCol>
-            <IonCol className="celda cabecera" size="3">
-              <p>Prestador</p>
-            </IonCol>
-            <IonCol className="celda cabecera" size="2">
-              <p>Mutual</p>
-            </IonCol>
-            <IonCol className="celda cabecera">
-              <p>Cancelado</p>
-            </IonCol>
-            <IonCol className="celda cabecera">
-              <p>Asistido</p>
-            </IonCol>
-            <IonCol className="celda cabecera">
-              <p>Acciones</p>
-            </IonCol>
-          </IonItem>
-          {FiltrarTurnos(listadoTurnos).map((fila) => (
-            <IonItem key={fila.nombre} className="fila">
-              <IonCol className="celda" size="2.5">
-                <p>{`${dayjs(fila.fecha).format("DD/MM/YYYY")} ${dayjs(
-                  fila.hora
-                ).format("HH:MM")}`}</p>
-              </IonCol>
-              <IonCol className="celda" size="3">
-                <p>{fila.prestadorNom}</p>
-              </IonCol>
-              <IonCol className="celda" size="2">
-                <p>{fila.mutualNom}</p>
-              </IonCol>
-              <IonCol className="celda">
-                <p>{fila.aCancelar ? "Si" : "No"}</p>
-              </IonCol>
-              <IonCol className="celda">
-                <p>{fila.asistio ? "Si" : "No"}</p>
-              </IonCol>
-              <IonCol className="celda">
-                {dayjs(fila.fecha).isAfter(new dayjs()) ? (
-                  // <div className="iconColumn">
-                  <IonButton
-                    shape="roud"
-                    fill="clear"
-                    onClick={() => handleClickSeleccionarTurno(fila)}
-                  >
-                    <IonIcon
-                      size="large"
-                      aria-label="Cancelar turno"
-                      ios={closeOutline}
-                      md={close}
-                    />
-                  </IonButton>
-                ) : // </div>
-                null}
-              </IonCol>
-            </IonItem>
-          ))}
+          </IonRow>
         </IonGrid>
-      </IonList>
+      ) : (
+        <>
+          {/*Desplegable con filtros*/}
+          <IonAccordionGroup expand="inset">
+            <IonAccordion value={"a"}>
+              <IonItem slot="header" color="light">
+                <IonLabel>Filtrar</IonLabel>
+              </IonItem>
+              <div slot="content">
+                <IonGrid>
+                  <IonRow>
+                    <IonCol size="12" size-md="6">
+                      <IonItem>
+                        <CustomDesplegable
+                          array={especialidades}
+                          value={especialidadSeleccionada}
+                          handleChange={handleChangeSelect}
+                          mostrarTodos={true}
+                          label={"Seleccione un tipo de especialidad"}
+                          id="Especialidad"
+                        />
+                      </IonItem>
+                    </IonCol>
 
-      <DialogoConfirmacion
-        titulo="Reservar turno"
-        contenido={`Ha decidido cancelar el turno con el/la prestador/a ${
-          turnoSeleccionado.prestadorNom
-        }, con especialidad en ${
-          turnoSeleccionado.especialidadNom
-        }, para el dia ${dayjs(turnoSeleccionado.fecha).format(
-          "DD/MM/YYYY"
-        )}, a las ${dayjs(turnoSeleccionado.hora).format(
-          "HH:mm"
-        )}, ¿Esta seguro/a de ello?`}
-        abrirCerrarModal={abrirModalCancelarReserva}
-        handleclickBotonNo={togleAbrirCerrarCancelarReserva}
-        handleclickBotonSi={handleClickCancelarReserva}
-        colorBotonNo="amarillo"
-        colorBotonSi="rojo"
-        textoBotonNo="No"
-        textoBotonSi="Si"
-      />
+                    <IonCol size="12" size-md="6">
+                      <IonItem>
+                        <CustomDesplegable
+                          array={listadoPrestadores}
+                          value={prestadorSeleccionado}
+                          handleChange={handleChangeSelect}
+                          mostrarTodos={true}
+                          label={"Seleccione un prestador"}
+                          id="Prestador"
+                        />
+                      </IonItem>
+                    </IonCol>
+                  </IonRow>
+                  <IonRow>
+                    <IonCol size="12" size-md="6">
+                      <IonItem>
+                        <CustomDesplegable
+                          array={cancelados}
+                          value={filtroCancelados}
+                          handleChange={handleChangeSelect}
+                          mostrarTodos={true}
+                          label={"Cancelados"}
+                          id="Cancelados"
+                        />
+                      </IonItem>
+                    </IonCol>
 
-      <CustomToast
-        openToast={toast.open}
-        onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
-        message={toast.mensaje}
-        colorNotificacion={toast.tipo}
-      />
+                    <IonCol size="12" size-md="6">
+                      <IonItem>
+                        <CustomDesplegable
+                          array={asistidos}
+                          value={filtroAsistidos}
+                          handleChange={handleChangeSelect}
+                          mostrarTodos={true}
+                          label={"Asistidos"}
+                          id="Asistidos"
+                        />
+                      </IonItem>
+                    </IonCol>
+                  </IonRow>
+                </IonGrid>
+              </div>
+            </IonAccordion>
+          </IonAccordionGroup>
 
+          {/* Tabla */}
+          <IonList lines="none">
+            <IonGrid>
+              <IonItem className="fila cabecera">
+                <IonCol className="celda cabecera" size="2.5">
+                  <p>Fecha</p>
+                </IonCol>
+                <IonCol className="celda cabecera" size="3">
+                  <p>Prestador</p>
+                </IonCol>
+                <IonCol className="celda cabecera" size="2">
+                  <p>Mutual</p>
+                </IonCol>
+                <IonCol className="celda cabecera">
+                  <p>Cancelado</p>
+                </IonCol>
+                <IonCol className="celda cabecera">
+                  <p>Asistido</p>
+                </IonCol>
+                <IonCol className="celda cabecera">
+                  <p>Acciones</p>
+                </IonCol>
+              </IonItem>
+              {FiltrarTurnos(listadoTurnos).map((fila) => (
+                <IonItem key={fila.nombre} className="fila">
+                  <IonCol className="celda" size="2.5">
+                    <p>{`${dayjs(fila.fecha).format("DD/MM/YYYY")} ${dayjs(
+                      fila.hora
+                    ).format("HH:MM")}`}</p>
+                  </IonCol>
+                  <IonCol className="celda" size="3">
+                    <p>{fila.prestadorNom}</p>
+                  </IonCol>
+                  <IonCol className="celda" size="2">
+                    <p>{fila.mutualNom}</p>
+                  </IonCol>
+                  <IonCol className="celda">
+                    <p>{fila.aCancelar ? "Si" : "No"}</p>
+                  </IonCol>
+                  <IonCol className="celda">
+                    <p>{fila.asistio ? "Si" : "No"}</p>
+                  </IonCol>
+                  <IonCol className="celda">
+                    {dayjs(fila.fecha).isAfter(new dayjs()) ? (
+                      // <div className="iconColumn">
+                      <IonButton
+                        shape="roud"
+                        fill="clear"
+                        onClick={() => handleClickSeleccionarTurno(fila)}
+                      >
+                        <IonIcon
+                          size="large"
+                          aria-label="Cancelar turno"
+                          ios={closeOutline}
+                          md={close}
+                        />
+                      </IonButton>
+                    ) : // </div>
+                    null}
+                  </IonCol>
+                </IonItem>
+              ))}
+            </IonGrid>
+          </IonList>
+
+          <DialogoConfirmacion
+            titulo="Reservar turno"
+            contenido={`Ha decidido cancelar el turno con el/la prestador/a ${
+              turnoSeleccionado.prestadorNom
+            }, con especialidad en ${
+              turnoSeleccionado.especialidadNom
+            }, para el dia ${dayjs(turnoSeleccionado.fecha).format(
+              "DD/MM/YYYY"
+            )}, a las ${dayjs(turnoSeleccionado.hora).format(
+              "HH:mm"
+            )}, ¿Esta seguro/a de ello?`}
+            abrirCerrarModal={abrirModalCancelarReserva}
+            handleclickBotonNo={togleAbrirCerrarCancelarReserva}
+            handleclickBotonSi={handleClickCancelarReserva}
+            colorBotonNo="amarillo"
+            colorBotonSi="rojo"
+            textoBotonNo="No"
+            textoBotonSi="Si"
+          />
+
+          <CustomToast
+            openToast={toast.open}
+            onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
+            message={toast.mensaje}
+            colorNotificacion={toast.tipo}
+          />
+        </>
+      )}
       {cargando && <LoadingBackdrop visualizar={cargando} />}
     </>
   );

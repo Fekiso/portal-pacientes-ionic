@@ -4,10 +4,10 @@ ion-backdrop {
 }
 
 #box {
-  position: absolute;
+  /* position: absolute;
   top: 50%;
   left: 50%;
-  transform: translateY(-50%) translateX(-50%);
+  transform: translateY(10%) translateX(-50%); */
   z-index: 100;
   display: flex;
   align-items: center;

@@ -39,7 +39,7 @@ const App = () => {
             <LoginIonic />
           </Route>
           <Route path="/page/" exact={true}>
-            <Redirect to="/page/Main" />
+            <Redirect to="/page/Inicio" />
           </Route>
           <Route path="/page/:name" exact={true}>
             <Page />

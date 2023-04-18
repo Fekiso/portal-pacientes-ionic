@@ -1,10 +1,20 @@
 import { IonToast } from "@ionic/react";
-import { closeOutline } from "ionicons/icons";
+import {
+  alertCircleOutline,
+  alertOutline,
+  checkmarkCircleOutline,
+  checkmarkDoneOutline,
+  checkmarkOutline,
+  closeOutline,
+  informationCircle,
+  informationOutline,
+  warningOutline,
+} from "ionicons/icons";
 import { useEffect, useState } from "react";
 import "./CustomToast.css";
 function CustomToast({ openToast, onDidDismiss, message, colorNotificacion }) {
   const [color, setColor] = useState("");
-
+  const [icon, setIcon] = useState();
   const getColor = () => {
     switch (colorNotificacion) {
       case "verde":
@@ -17,9 +27,24 @@ function CustomToast({ openToast, onDidDismiss, message, colorNotificacion }) {
         return "primary";
     }
   };
+  const getIcon = () => {
+    switch (colorNotificacion) {
+      case "verde":
+        return checkmarkOutline;
+      case "rojo":
+        return alertOutline;
+      case "amarillo":
+        return warningOutline;
+      default:
+        return informationOutline;
+    }
+  };
 
   useEffect(() => {
-    if (openToast) setColor(getColor());
+    if (openToast) {
+      setColor(getColor());
+      setIcon(getIcon());
+    }
   }, [openToast]);
 
   return (
@@ -30,6 +55,7 @@ function CustomToast({ openToast, onDidDismiss, message, colorNotificacion }) {
       duration={5000}
       position="top"
       className={`${color}`}
+      icon={icon}
       buttons={[
         {
           icon: closeOutline,

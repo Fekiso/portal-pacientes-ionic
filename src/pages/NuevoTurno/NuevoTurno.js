@@ -201,18 +201,22 @@ export default function NuevoTurno() {
           mostrarNotificacion(
             true,
             "No hay turnos disponibles para el dia indicado",
-            "amarillo"
+            ""
           );
         }
       } else {
         mostrarNotificacion(
           true,
           "No hay turnos disponibles para el dia indicado",
-          "amarillo"
+          ""
         );
       }
     } catch (e) {
-      mostrarNotificacion(true,"Ha ocurrido un error al intentar cargar los turnos disponibles para la fecha indicada", "rojo")
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar cargar los turnos disponibles para la fecha indicada",
+        "rojo"
+      );
     }
   };
 
@@ -565,7 +569,7 @@ export default function NuevoTurno() {
         traerHorariosAtencion(value);
         break;
       default:
-        mostrarNotificacion(true,"Seleccion invalida", "rojo")
+        mostrarNotificacion(true, "Seleccion invalida", "rojo");
         break;
     }
     setCargando(false);

@@ -42,7 +42,7 @@ const PageError = (props) => {
   const handleClickRedirigir = (destino) => {
     switch (destino) {
       case "MainPage":
-        history.push("/page/Main");
+        history.push("/page/Inicio");
         break;
       case "CerrarSesion":
         history.push("/");

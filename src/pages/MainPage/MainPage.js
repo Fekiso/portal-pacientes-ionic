@@ -102,7 +102,7 @@ const MainPage = (props) => {
 
   const handleClickRedirigir = (destino) => {
     switch (destino) {
-      case "NuevoTurno":
+      case "Reservar":
         history.push({ pathname: "/page/Reservar" });
         break;
       case "Horarios":
@@ -124,7 +124,11 @@ const MainPage = (props) => {
     <IonGrid>
       <IonRow>
         <IonCol>
-          <IonItem detail={true} lines="none">
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Reservar")}
+          >
             <IonAvatar slot="start">
               <IonIcon
                 ios={calendarNumberOutline}
@@ -136,7 +140,11 @@ const MainPage = (props) => {
           </IonItem>
         </IonCol>
         <IonCol>
-          <IonItem detail={true} lines="none">
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Horarios")}
+          >
             <IonAvatar slot="start">
               <IonIcon ios={peopleOutline} md={people} size="large" />
             </IonAvatar>
@@ -146,7 +154,11 @@ const MainPage = (props) => {
       </IonRow>
       <IonRow>
         <IonCol>
-          <IonItem detail={true} lines="none">
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Turnos")}
+          >
             <IonAvatar slot="start">
               <IonIcon ios={calendarOutline} md={calendar} size="large" />
             </IonAvatar>
@@ -154,7 +166,11 @@ const MainPage = (props) => {
           </IonItem>
         </IonCol>
         <IonCol>
-          <IonItem detail={true} lines="none">
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Estudios")}
+          >
             <IonAvatar slot="start">
               <IonIcon
                 ios={fileTrayFullOutline}
@@ -168,49 +184,39 @@ const MainPage = (props) => {
       </IonRow>
 
       {/*Tabla*/}
-      <IonAccordionGroup expand="inset">
-        <IonAccordion value={"a"}>
-          <IonItem slot="header" color="light">
-            <IonText>Proximos turnos</IonText>
-          </IonItem>
-          <div slot="content">
-            <IonList lines="none">
-              <IonGrid>
-                <IonItem className="fila cabecera">
-                  <IonCol className="celda cabecera">
-                    <p>Fecha</p>
-                  </IonCol>
-                  <IonCol className="celda cabecera">
-                    <p>Hora</p>
-                  </IonCol>
-                  <IonCol className="celda cabecera">
-                    <p>Prestador</p>
-                  </IonCol>
-                  <IonCol className="celda cabecera">
-                    <p>Mutual</p>
-                  </IonCol>
-                </IonItem>
-                {listadoTurnos.map((fila) => (
-                  <IonItem key={fila.nombre} className="fila">
-                    <IonCol className="celda">
-                      <p>{dayjs(fila.fecha).format("DD/MM/YYYY")}</p>
-                    </IonCol>
-                    <IonCol className="celda">
-                      <p>{dayjs(fila.hora).format("HH:MM")}</p>
-                    </IonCol>
-                    <IonCol className="celda">
-                      <p>{fila.prestadorNom}</p>
-                    </IonCol>
-                    <IonCol className="celda">
-                      <p>{fila.mutualNom}</p>
-                    </IonCol>
+      {listadoTurnos.length > 0 && (
+        <IonAccordionGroup expand="inset">
+          <IonAccordion value={"a"}>
+            <IonItem slot="header" color="light">
+              <IonText>Proximos turnos</IonText>
+            </IonItem>
+            <div slot="content">
+              <IonList lines="none">
+                <IonGrid>
+                  <IonItem className="fila cabecera">
+                    <IonCol className="celda cabecera">Fecha</IonCol>
+                    <IonCol className="celda cabecera">Hora</IonCol>
+                    <IonCol className="celda cabecera">Prestador</IonCol>
+                    <IonCol className="celda cabecera">Mutual</IonCol>
                   </IonItem>
-                ))}
-              </IonGrid>
-            </IonList>
-          </div>
-        </IonAccordion>
-      </IonAccordionGroup>
+                  {listadoTurnos.map((fila) => (
+                    <IonItem key={fila.nombre} className="fila">
+                      <IonCol className="celda">
+                        {dayjs(fila.fecha).format("DD/MM/YYYY")}
+                      </IonCol>
+                      <IonCol className="celda">
+                        {dayjs(fila.hora).format("HH:MM")}
+                      </IonCol>
+                      <IonCol className="celda">{fila.prestadorNom}</IonCol>
+                      <IonCol className="celda">{fila.mutualNom}</IonCol>
+                    </IonItem>
+                  ))}
+                </IonGrid>
+              </IonList>
+            </div>
+          </IonAccordion>
+        </IonAccordionGroup>
+      )}
     </IonGrid>
   );
 };

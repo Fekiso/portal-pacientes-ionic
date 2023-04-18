@@ -8,6 +8,7 @@ import fileDownload from "js-file-download";
 import {
   IonAccordion,
   IonAccordionGroup,
+  IonActionSheet,
   IonButton,
   IonButtons,
   IonCol,
@@ -33,6 +34,7 @@ import {
 import "./EstudiosPaciente.css";
 
 import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/esm/Page/TextLayer.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
@@ -83,7 +85,7 @@ export default function EstudiosPaciente() {
       if (response.data.length !== 0) {
         Estudios = response.data;
       } else {
-        Estudios = null;
+        Estudios = [];
       }
 
       setListadoEstudios(Estudios);
@@ -158,6 +160,7 @@ export default function EstudiosPaciente() {
         }
       }
     } catch (error) {
+      console.log(error);
       mostrarNotificacion(
         true,
         "Ha ocurrido un error al intentar buscar el estudio seleccionado",
@@ -212,114 +215,168 @@ export default function EstudiosPaciente() {
 
   return (
     <>
-      {/*Desplegable con filtros*/}
-      <IonAccordionGroup expand="inset">
-        <IonAccordion value={"a"}>
-          <IonItem slot="header" color="light">
-            <IonLabel>Filtrar</IonLabel>
-          </IonItem>
-          <div slot="content">
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12" size-md="6">
-                  <IonItem>
-                    <CustomDesplegable
-                      array={listadoEstudiosFiltro}
-                      value={estudioSel}
-                      handleChange={FiltrarEstudios}
-                      mostrarTodos={true}
-                      label={"Seleccione un tipo de estudio"}
-                      id="Estudios"
-                    />
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </div>
-        </IonAccordion>
-      </IonAccordionGroup>
-
-      {/* Tabla */}
-      <IonList lines="none">
+      {listadoEstudios.length <= 0 ? (
         <IonGrid>
-          <IonItem className="fila cabecera">
-            <IonCol className="celda cabecera">
-              <p>Fecha</p>
+          <IonRow className="ion-justify-content-center">
+            <IonCol>
+              <div class="ion-text-center">
+                <p>No tiene estudios registrados aun</p>
+              </div>
             </IonCol>
-            <IonCol className="celda cabecera">
-              <p>Nombre de estudio</p>
-            </IonCol>
-            <IonCol className="celda cabecera">
-              <p>Acciones</p>
-            </IonCol>
-          </IonItem>
-          {listadoEstudiosFiltrados.map((fila) => (
-            <IonItem key={fila.nombre} className="fila">
-              <IonCol className="celda">
-                <p>{dayjs(fila.fecha).format("DD/MM/YYYY")}</p>
-              </IonCol>
-              <IonCol className="celda">
-                <p>{fila.estudioNom}</p>
-              </IonCol>
-              <IonCol className="celda" itemProp="">
-                <div className="iconColumn">
-                  <IonButton shape="roud" fill="clear">
-                    <IonIcon
-                      size="large"
-                      ios={eyeOutline}
-                      md={eye}
-                      onClick={() => VisualizarPdf(fila)}
-                    />
-                  </IonButton>
-                  <IonButton shape="roud" fill="clear">
-                    <IonIcon
-                      size="large"
-                      ios={cloudDownloadOutline}
-                      md={cloudDownload}
-                      onClick={() => DescargarPdf(fila)}
-                    />
-                  </IonButton>
-                </div>
-              </IonCol>
-            </IonItem>
-          ))}
+          </IonRow>
         </IonGrid>
-      </IonList>
+      ) : (
+        <>
+          {/*Desplegable con filtros*/}
+          <IonAccordionGroup expand="inset">
+            <IonAccordion value={"a"}>
+              <IonItem slot="header" color="light">
+                <IonLabel>Filtrar</IonLabel>
+              </IonItem>
+              <div slot="content">
+                <IonGrid>
+                  <IonRow>
+                    <IonCol size="12" size-md="6">
+                      <IonItem>
+                        <CustomDesplegable
+                          array={listadoEstudiosFiltro}
+                          value={estudioSel}
+                          handleChange={FiltrarEstudios}
+                          mostrarTodos={true}
+                          label={"Seleccione un tipo de estudio"}
+                          id="Estudios"
+                        />
+                      </IonItem>
+                    </IonCol>
+                  </IonRow>
+                </IonGrid>
+              </div>
+            </IonAccordion>
+          </IonAccordionGroup>
 
-      <IonModal isOpen={abrirModal}>
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>
-              {`${estudioPdf.nombre}-${dayjs(estudioPdf.fecha).format(
-                "DD/MM/YYYY"
-              )}`}
-            </IonTitle>
-            <IonButtons slot="end">
-              <IonButton strong={true} onClick={() => abrirCerrarModal()}>
-                Cerrar
-              </IonButton>
-            </IonButtons>
-          </IonToolbar>
-        </IonHeader>
-        <IonContent className="ion-padding">
-          {estudioPdf.doc && (
-            <Document
-              file={estudioPdf.doc}
-              onLoadSuccess={onDocumentLoadSuccess}
-            >
-              {[...Array(numPages)].map((_, index) => (
-                <Page key={`page_${index + 1}`} pageNumber={1} />
+          {/* Tabla */}
+          <IonList lines="none">
+            <IonGrid>
+              <IonItem className="fila cabecera">
+                <IonCol className="celda cabecera">
+                  <p>Fecha</p>
+                </IonCol>
+                <IonCol className="celda cabecera">
+                  <p>Nombre de estudio</p>
+                </IonCol>
+                <IonCol className="celda cabecera">
+                  <p>Acciones</p>
+                </IonCol>
+              </IonItem>
+              {listadoEstudiosFiltrados.map((fila) => (
+                <IonItem key={fila.nombre} className="fila">
+                  <IonCol className="celda">
+                    <p>{dayjs(fila.fecha).format("DD/MM/YYYY")}</p>
+                  </IonCol>
+                  <IonCol className="celda">
+                    <p>{fila.estudioNom}</p>
+                  </IonCol>
+                  <IonCol className="celda" itemProp="">
+                    <div className="iconColumn">
+                      <IonButton
+                        shape="roud"
+                        fill="clear"
+                        onClick={() => VisualizarPdf(fila)}
+                      >
+                        <IonIcon size="large" ios={eyeOutline} md={eye} />
+                      </IonButton>
+                      <IonButton
+                        shape="roud"
+                        fill="clear"
+                        onClick={() => DescargarPdf(fila)}
+                      >
+                        <IonIcon
+                          size="large"
+                          ios={cloudDownloadOutline}
+                          md={cloudDownload}
+                        />
+                      </IonButton>
+                    </div>
+                  </IonCol>
+                </IonItem>
               ))}
-            </Document>
-          )}
-        </IonContent>
-      </IonModal>
-      <CustomToast
-        openToast={toast.open}
-        onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
-        message={toast.mensaje}
-        colorNotificacion={toast.tipo}
-      />
+            </IonGrid>
+          </IonList>
+
+          <IonActionSheet
+            header={`${estudioPdf.nombre}-${dayjs(estudioPdf.fecha).format(
+              "DD/MM/YYYY"
+            )}`}
+            buttons={[
+              {
+                text: "Cancelar",
+                role: "cancel",
+                data: {
+                  action: "cancel",
+                },
+              },
+            ]}
+            onDidDismiss={abrirCerrarModal}
+          >
+            <IonContent className="ion-padding">
+              {estudioPdf.doc && (
+                <Document
+                  file={estudioPdf.doc}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                >
+                  {[...Array(numPages)].map((_, index) => (
+                    <Page
+                      key={`page_${index + 1}`}
+                      pageNumber={1}
+                      renderTextLayer={false}
+                      wrap={false}
+                    />
+                  ))}
+                </Document>
+              )}
+            </IonContent>
+          </IonActionSheet>
+          {/* <IonModal isOpen={abrirModal} backdropDismiss={false} expand="block">
+            <IonHeader>
+              <IonToolbar>
+                <IonTitle>
+                  {`${estudioPdf.nombre}-${dayjs(estudioPdf.fecha).format(
+                    "DD/MM/YYYY"
+                  )}`}
+                </IonTitle>
+                <IonButtons slot="end">
+                  <IonButton strong={true} onClick={() => abrirCerrarModal()}>
+                    Cerrar
+                  </IonButton>
+                </IonButtons>
+              </IonToolbar>
+            </IonHeader>
+            <IonContent className="ion-padding">
+              {estudioPdf.doc && (
+                <Document
+                  file={estudioPdf.doc}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                >
+                  {[...Array(numPages)].map((_, index) => (
+                    <Page
+                      key={`page_${index + 1}`}
+                      pageNumber={1}
+                      renderTextLayer={false}
+                      wrap={false}
+                    />
+                  ))}
+                </Document>
+              )}
+            </IonContent>
+          </IonModal> */}
+          <CustomToast
+            openToast={toast.open}
+            onDidDismiss={(e) => mostrarNotificacion(false, "", "")}
+            message={toast.mensaje}
+            colorNotificacion={toast.tipo}
+          />
+        </>
+      )}
       {cargando && <LoadingBackdrop visualizar={cargando} />}
     </>
   );

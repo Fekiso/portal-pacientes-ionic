@@ -24,7 +24,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
               return <HorariosPrestadores />;
             case "Reservar":
               return <NuevoTurno />;
-            case "Main":
+            case "Inicio":
               return <MainPage />;
             default:
               return <PageError motivo="404" />;

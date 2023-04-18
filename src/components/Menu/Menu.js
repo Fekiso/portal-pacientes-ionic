@@ -31,7 +31,7 @@ import { useEffect, useState } from "react";
 const appPages = [
   {
     title: "Inicio",
-    url: "/page/Main",
+    url: "/page/Inicio",
     iosIcon: gridOutline,
     mdIcon: grid,
   },
