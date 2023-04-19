@@ -620,7 +620,7 @@ export default function NuevoTurno() {
                   array={especialidades}
                   value={especialidadSeleccionada}
                   handleChange={handleChangeSelect}
-                  mostrarTodos={true}
+                  mostrarTodos={false}
                   label={"Seleccione un tipo de especialidad"}
                   id="Especialidad"
                 />
@@ -633,7 +633,7 @@ export default function NuevoTurno() {
                   array={listadoPrestadores}
                   value={prestadorSeleccionado}
                   handleChange={handleChangeSelect}
-                  mostrarTodos={true}
+                  mostrarTodos={false}
                   label={"Seleccione un prestador"}
                   id="Prestador"
                 />

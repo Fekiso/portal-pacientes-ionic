@@ -83,7 +83,11 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
 
       setTiposDoc(tiposDocs);
     } catch (e) {
-      mostrarNotificacion(true,"Ha ocurrido un error al intentar cargar los tipos de documentos", "rojo")
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar cargar los tipos de documentos",
+        "rojo"
+      );
     }
   };
 
@@ -108,7 +112,11 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
 
       setMutuales(mutuales);
     } catch (e) {
-      mostrarNotificacion(true,"Ha ocurrido un error al intentar cargar las mutuales registradas", "rojo")
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar cargar las mutuales registradas",
+        "rojo"
+      );
     }
   };
 
@@ -126,7 +134,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
         setTipoDoc(value);
         break;
       default:
-        mostrarNotificacion(true,"Seleccion invalida", "rojo")
+        mostrarNotificacion(true, "Seleccion invalida", "rojo");
         break;
     }
   };
@@ -182,11 +190,21 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
       pasa = false;
       errors.correo = true;
     }
-    if (tipoDoc === {} || tipoDoc === null || tipoDoc === undefined) {
+    if (
+      tipoDoc === {} ||
+      tipoDoc === null ||
+      tipoDoc === undefined ||
+      tipoDoc === -1
+    ) {
       pasa = false;
       errors.tipoDoc = true;
     }
-    if (mutual === {} || mutual === null || mutual === undefined) {
+    if (
+      mutual === {} ||
+      mutual === null ||
+      mutual === undefined ||
+      mutual === -1
+    ) {
       pasa = false;
       errors.mutual = true;
     }
@@ -212,49 +230,42 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
     };
 
     try {
-      if (validarFormRegistroPaciente()) {
-        const response = await axios.post(
-          `${url}pacientes`,
-          {
-            hc: nroDocumento,
-            documentoNro: nroDocumento,
-            documentoTipo: tipoDoc,
-            documentoTipoNombre: getTextoDesplegableSeleccionado(
-              tiposDoc,
-              tipoDoc
-            ),
-            nombre: nombre,
-            apellido: apellido,
-            mutual: mutual,
-            mutualNombre: getTextoDesplegableSeleccionado(mutuales, mutual),
-            celular: telefono,
-            email: correo,
-            mutualAfiliado: mutual !== 1 ? mutualAfiliado : "-",
-            nacimiento: fechaNac,
-            password: nroDocumento,
-          },
-          config
-        );
-        if (response) {
-          if (response.status === 200) {
-            mostrarNotificacion(
-              true,
-              "Usuario registrado correctamente",
-              "verde"
-            );
-          }
-          if (response.status === 400) {
-            mostrarNotificacion(
-              true,
-              "No se ha podido registrar el nuevo usuario debido a: " +
-                response,
-              "rojo"
-            );
-          }
-        } else {
+      const response = await axios.post(
+        `${url}pacientes`,
+        {
+          hc: nroDocumento,
+          documentoNro: nroDocumento,
+          documentoTipo: tipoDoc,
+          documentoTipoNombre: getTextoDesplegableSeleccionado(
+            tiposDoc,
+            tipoDoc
+          ),
+          nombre: nombre,
+          apellido: apellido,
+          mutual: mutual,
+          mutualNombre: getTextoDesplegableSeleccionado(mutuales, mutual),
+          celular: telefono,
+          email: correo,
+          mutualAfiliado: mutual !== 1 ? mutualAfiliado : "-",
+          nacimiento: fechaNac,
+          password: nroDocumento,
+        },
+        config
+      );
+      if (response) {
+        if (response.status === 200) {
           mostrarNotificacion(
             true,
-            "Ocurrio algun problema al intentar registrar el nuevo usuario, por favor reintente mas tarde",
+            "Usuario registrado correctamente",
+            "verde"
+          );
+          limpiarCampos();
+          closeModal();
+        }
+        if (response.status === 400) {
+          mostrarNotificacion(
+            true,
+            "No se ha podido registrar el nuevo usuario debido a: " + response,
             "rojo"
           );
         }
@@ -293,9 +304,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
   };
 
   const handleClickRegistrarPaciente = () => {
-    registrarPaciente();
-    limpiarCampos();
-    closeModal();
+    if (validarFormRegistroPaciente()) {
+      registrarPaciente();
+    }
   };
   // agregar metodos modal confirmacion y cierre de ventana
   return (
@@ -397,11 +408,13 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
             )}
           </IonItem>
           <IonItem>
+            <IonLabel>Tipo de documento</IonLabel>
             <CustomDesplegable
               array={tiposDoc}
               value={tipoDoc}
               handleChange={handleChangeSelect}
               mostrarTodos={false}
+              barraBusqueda={true}
               label={"Tipo de documento"}
               id="Tipo Documento"
               ocultarLabel={true}
@@ -462,16 +475,36 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
         <IonList>
           <IonNote>Datos de mutual</IonNote>
           <IonItem>
+            <IonLabel>Mutual</IonLabel>
             <CustomDesplegable
               array={mutuales}
               value={mutual}
               handleChange={handleChangeSelect}
               mostrarTodos={false}
+              barraBusqueda={true}
               label={"Mutual"}
               id="Mutual"
               ocultarLabel={true}
               className={`${errores.mutual && "ion-invalid"}`}
             />
+            {errores.mutual && (
+              <>
+                <IonIcon
+                  aria-hidden="true"
+                  slot="end"
+                  ios={alertOutline}
+                  md={alert}
+                  id="btnErrorTipoDoc"
+                  size="small"
+                  color="danger"
+                />
+                <IonPopover trigger="btnErrorTipoDoc" triggerAction="click">
+                  <IonContent class="ion-padding">
+                    No se selecciono una mutual
+                  </IonContent>
+                </IonPopover>
+              </>
+            )}
           </IonItem>
           <IonItem>
             <IonInput
