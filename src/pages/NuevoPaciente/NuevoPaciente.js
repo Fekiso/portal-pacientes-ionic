@@ -59,8 +59,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
     tipoDoc: false,
     mutual: false,
   });
-  const [abrirModalCancelarRegistro, setAbrirModalCancelarRegistro] =
-    useState(false);
+  const [abrirModalCancelarRegistro, setAbrirModalCancelarRegistro] = useState(false);
 
   const traerTiposDocs = async () => {
     let tiposDocs = null;
@@ -171,11 +170,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
       pasa = false;
       errors.telefono = true;
     }
-    if (
-      nroDocumento === "" ||
-      nroDocumento === null ||
-      nroDocumento === undefined
-    ) {
+    if (nroDocumento === "" || nroDocumento === null || nroDocumento === undefined) {
       pasa = false;
       errors.nroDocumento = true;
     }
@@ -190,28 +185,16 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
       pasa = false;
       errors.correo = true;
     }
-    if (
-      tipoDoc === {} ||
-      tipoDoc === null ||
-      tipoDoc === undefined ||
-      tipoDoc === -1
-    ) {
+    if (tipoDoc === {} || tipoDoc === null || tipoDoc === undefined || tipoDoc === -1) {
       pasa = false;
       errors.tipoDoc = true;
     }
-    if (
-      mutual === {} ||
-      mutual === null ||
-      mutual === undefined ||
-      mutual === -1
-    ) {
+    if (mutual === {} || mutual === null || mutual === undefined || mutual === -1) {
       pasa = false;
       errors.mutual = true;
     }
     if (
-      (mutualAfiliado === "" ||
-        mutualAfiliado === null ||
-        mutualAfiliado === undefined) &&
+      (mutualAfiliado === "" || mutualAfiliado === null || mutualAfiliado === undefined) &&
       mutual.codigo !== 1
     ) {
       pasa = false;
@@ -236,10 +219,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
           hc: nroDocumento,
           documentoNro: nroDocumento,
           documentoTipo: tipoDoc,
-          documentoTipoNombre: getTextoDesplegableSeleccionado(
-            tiposDoc,
-            tipoDoc
-          ),
+          documentoTipoNombre: getTextoDesplegableSeleccionado(tiposDoc, tipoDoc),
           nombre: nombre,
           apellido: apellido,
           mutual: mutual,
@@ -254,11 +234,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
       );
       if (response) {
         if (response.status === 200) {
-          mostrarNotificacion(
-            true,
-            "Usuario registrado correctamente",
-            "verde"
-          );
+          mostrarNotificacion(true, "Usuario registrado correctamente", "verde");
           limpiarCampos();
           closeModal();
         }
@@ -340,9 +316,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorNombre" triggerAction="click">
-                  <IonContent class="ion-padding">
-                    No se ingreso el nombre
-                  </IonContent>
+                  <IonContent class="ion-padding">No se ingreso el nombre</IonContent>
                 </IonPopover>
               </>
             )}
@@ -367,9 +341,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorApellido" triggerAction="click">
-                  <IonContent class="ion-padding">
-                    No se ingreso el apellido
-                  </IonContent>
+                  <IonContent class="ion-padding">No se ingreso el apellido</IonContent>
                 </IonPopover>
               </>
             )}
@@ -382,9 +354,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label-placement="floating"
               value={fechaNac}
               onIonChange={(e) => setFechaNac(e.target.value)}
-              min={dayjs(new dayjs())
-                .subtract(110, "year")
-                .format("YYYY-MM-DD")}
+              min={dayjs(new dayjs()).subtract(110, "year").format("YYYY-MM-DD")}
               max={dayjs(new dayjs()).format("YYYY-MM-DD")}
               className={`${errores.fechaNac && "ion-invalid"}`}
             />
@@ -408,7 +378,6 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
             )}
           </IonItem>
           <IonItem>
-            <IonLabel>Tipo de documento</IonLabel>
             <CustomDesplegable
               array={tiposDoc}
               value={tipoDoc}
@@ -433,9 +402,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorTipoDoc" triggerAction="click">
-                  <IonContent class="ion-padding">
-                    No se selecciono un tipo de documento
-                  </IonContent>
+                  <IonContent class="ion-padding">No se selecciono un tipo de documento</IonContent>
                 </IonPopover>
               </>
             )}
@@ -460,13 +427,8 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   size="small"
                   color="danger"
                 />
-                <IonPopover
-                  trigger="btnErrorNroDocumento"
-                  triggerAction="click"
-                >
-                  <IonContent class="ion-padding">
-                    No se ingreso un numero de documento
-                  </IonContent>
+                <IonPopover trigger="btnErrorNroDocumento" triggerAction="click">
+                  <IonContent class="ion-padding">No se ingreso un numero de documento</IonContent>
                 </IonPopover>
               </>
             )}
@@ -475,7 +437,6 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
         <IonList>
           <IonNote>Datos de mutual</IonNote>
           <IonItem>
-            <IonLabel>Mutual</IonLabel>
             <CustomDesplegable
               array={mutuales}
               value={mutual}
@@ -494,14 +455,12 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   slot="end"
                   ios={alertOutline}
                   md={alert}
-                  id="btnErrorTipoDoc"
+                  id="btnErrorMutual"
                   size="small"
                   color="danger"
                 />
-                <IonPopover trigger="btnErrorTipoDoc" triggerAction="click">
-                  <IonContent class="ion-padding">
-                    No se selecciono una mutual
-                  </IonContent>
+                <IonPopover trigger="btnErrorMutual" triggerAction="click">
+                  <IonContent class="ion-padding">No se selecciono una mutual</IonContent>
                 </IonPopover>
               </>
             )}
@@ -525,10 +484,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   size="small"
                   color="danger"
                 />
-                <IonPopover
-                  trigger="btnErrorMutualAfiliado"
-                  triggerAction="click"
-                >
+                <IonPopover trigger="btnErrorMutualAfiliado" triggerAction="click">
                   <IonContent class="ion-padding">
                     No se ingreso un numero de afiliado, en caso de no tener
                   </IonContent>
@@ -559,9 +515,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorTelefono" triggerAction="click">
-                  <IonContent class="ion-padding">
-                    No se ingreso un telefono de contacto
-                  </IonContent>
+                  <IonContent class="ion-padding">No se ingreso un telefono de contacto</IonContent>
                 </IonPopover>
               </>
             )}

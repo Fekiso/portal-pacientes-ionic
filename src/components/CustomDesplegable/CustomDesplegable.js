@@ -1,22 +1,15 @@
-import { IonAlert } from "@ionic/react";
+import { IonAlert, IonLabel } from "@ionic/react";
 import { useEffect, useState } from "react";
 import StyledButton from "../StyledButton/StyledButton";
 
-const CustomDesplegable = ({
-  array,
-  handleChange,
-  mostrarTodos,
-  label,
-  id,
-  value,
-}) => {
+const CustomDesplegable = ({ array, handleChange, mostrarTodos, label, id, value }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState(false);
   const [texto, setTexto] = useState("");
 
-  const onHandleChange = (value, label) => {
+  const onHandleChange = (value, textLabel) => {
     handleChange(value, id);
-    setTexto(label);
+    setTexto(textLabel);
     setIsOpen(false);
   };
 
@@ -57,6 +50,7 @@ const CustomDesplegable = ({
 
   return (
     <>
+      <IonLabel>{id} : </IonLabel>
       <StyledButton
         onClick={() => setIsOpen(true)}
         fill="clear"
