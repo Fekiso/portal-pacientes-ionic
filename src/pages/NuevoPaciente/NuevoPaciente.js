@@ -248,12 +248,8 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
       } else {
         mostrarNotificacion(true, "Falta rellenar algunos campos", "rojo");
       }
-    } catch (e) {
-      mostrarNotificacion(
-        true,
-        "Ocurrio algun problema al intentar registrar el nuevo usuario, por favor reintente mas tarde",
-        "rojo"
-      );
+    } catch ({ response }) {
+      mostrarNotificacion(true, "Error: " + response.data, "rojo");
     }
   };
 
@@ -300,7 +296,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label="Nombre"
               label-placement="floating"
               value={nombre}
-              onIonChange={(e) => setNombre(e.target.value)}
+              onKeyUp={(e) => setNombre(e.target.value)}
               className={`${errores.nombre && "ion-invalid"}`}
             />
 
@@ -326,7 +322,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label="Apellido"
               label-placement="floating"
               value={apellido}
-              onIonChange={(e) => setApellido(e.target.value)}
+              onKeyUp={(e) => setApellido(e.target.value)}
               className={`${errores.apellido && "ion-invalid"}`}
             />
             {errores.apellido && (
@@ -383,6 +379,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               value={tipoDoc}
               handleChange={handleChangeSelect}
               mostrarTodos={false}
+              mostrarSearch={false}
               barraBusqueda={true}
               label={"Tipo de documento"}
               id="Tipo Documento"
@@ -413,7 +410,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label="Numero de documento"
               label-placement="floating"
               value={nroDocumento}
-              onIonChange={(e) => setNroDocumento(e.target.value)}
+              onKeyUp={(e) => setNroDocumento(e.target.value)}
               className={`${errores.nroDocumento && "ion-invalid"}`}
             />
             {errores.nroDocumento && (
@@ -442,6 +439,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               value={mutual}
               handleChange={handleChangeSelect}
               mostrarTodos={false}
+              mostrarSearch={true}
               barraBusqueda={true}
               label={"Mutual"}
               id="Mutual"
@@ -470,7 +468,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label="Numero de afiliado"
               label-placement="floating"
               value={mutualAfiliado}
-              onIonChange={(e) => setMutualAfiliado(e.target.value)}
+              onKeyUp={(e) => setMutualAfiliado(e.target.value)}
               className={`${errores.mutualAfiliado && "ion-invalid"}`}
             />
             {errores.mutualAfiliado && (
@@ -500,7 +498,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label="Telefono"
               label-placement="floating"
               value={telefono}
-              onIonChange={(e) => setTelefono(e.target.value)}
+              onKeyUp={(e) => setTelefono(e.target.value)}
               className={`${errores.telefono && "ion-invalid"}`}
             />
             {errores.telefono && (
@@ -525,7 +523,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
               label="Correo electronico"
               label-placement="floating"
               value={correo}
-              onIonChange={(e) => setCorreo(e.target.value)}
+              onKeyUp={(e) => setCorreo(e.target.value)}
               className={`${errores.correo && "ion-invalid"}`}
             />
             {errores.correo && (

@@ -25,6 +25,8 @@ import "./theme/variables.css";
 import LoginIonic from "./pages/Login/Login";
 import PageError from "./pages/PageError/PageError";
 
+import CustomAutocompleteInput from "./components/CustomAutocompleteInput/CustomAutocompleteInput";
+
 setupIonicReact();
 
 const App = () => {

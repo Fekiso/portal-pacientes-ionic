@@ -16,11 +16,6 @@ ion-row:last-child {
   border-bottom: none;
 }
 
-ion-col {
-  /* color: #000; */
-  /* background-color: #fff; */
-}
-
 .tabla {
   border-radius: 5px;
   margin: 15px;
@@ -34,7 +29,10 @@ ion-col {
 
 .celda.cabecera {
   font-weight: bold;
-  /* color: #000; */
+}
+
+.celda.cabecera p {
+  --color: var(--ion-color-primary);
 }
 
 .fila {
@@ -45,7 +43,6 @@ ion-col {
 .fila.cabecera {
   font-weight: bold;
   border-bottom: solid 2px #9f9f9f;
-  /* color: #000; */
 }
 .fila:last-child {
   border-bottom: none;

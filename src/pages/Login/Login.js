@@ -80,14 +80,9 @@ const LoginIonic = () => {
       });
       return response.data.token;
     } catch (error) {
-      console.error("Error en petición loginPaciente", error.response);
       setErrorPassword(true);
       setMsjErrorPassword("Usuario o Password incorrecto");
-      mostrarNotificacion(
-        true,
-        "Se produjo un error al intentar generar la sesion",
-        "rojo"
-      );
+      mostrarNotificacion(true, "Error: " + error.response.data, "rojo");
     }
   };
 
@@ -96,10 +91,7 @@ const LoginIonic = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const response = await axios.get(
-        `${urlAxio}Pacientes?documento=${documento}`,
-        config
-      );
+      const response = await axios.get(`${urlAxio}Pacientes?documento=${documento}`, config);
       const data = response.data[0];
       return {
         usuario: usuario.usuario,
@@ -199,32 +191,18 @@ const LoginIonic = () => {
                     id="btnHelpNrodocumento"
                     size="small"
                   />
-                  <IonPopover
-                    trigger="btnHelpNrodocumento"
-                    triggerAction="click"
-                  >
-                    <IonContent class="ion-padding">
-                      Solo se aceptan valores numericos
-                    </IonContent>
+                  <IonPopover trigger="btnHelpNrodocumento" triggerAction="click">
+                    <IonContent class="ion-padding">Solo se aceptan valores numericos</IonContent>
                   </IonPopover>
                   <IonInput
                     value={usuario.usuario}
-                    onIonChange={handleChangeUsuario}
+                    onKeyUp={handleChangeUsuario}
                     autofocus
                     inputMode="numeric"
                   />
-                  <IonIcon
-                    aria-hidden="true"
-                    slot="end"
-                    ios={personOutline}
-                    md={person}
-                  />
+                  <IonIcon aria-hidden="true" slot="end" ios={personOutline} md={person} />
                 </IonItem>
-                <IonItem
-                  lines="none"
-                  fill="solid"
-                  className={`${errorPassword && "ion-invalid"}`}
-                >
+                <IonItem lines="none" fill="solid" className={`${errorPassword && "ion-invalid"}`}>
                   <IonLabel position="floating">Contraseña</IonLabel>
                   <IonIcon
                     aria-hidden="true"
@@ -236,14 +214,14 @@ const LoginIonic = () => {
                   />
                   <IonPopover trigger="btnHelpPassword" triggerAction="click">
                     <IonContent class="ion-padding">
-                      Si es su primera vez ingresando, ingrese su numero de
-                      documento
+                      Si es su primera vez ingresando, ingrese su numero de documento
                     </IonContent>
                   </IonPopover>
                   <IonInput
                     value={usuario.password}
-                    onIonChange={handleChangePassword}
+                    onKeyUp={handleChangePassword}
                     type={blnVerPassword ? "number" : "password"}
+                    className="passwordInput"
                   />
                   <IonIcon
                     aria-hidden="true"

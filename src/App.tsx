@@ -27,6 +27,7 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 import Menu from "./components/Menu/Menu";
+import CustomAutocompleteInput from "./components/CustomAutocompleteInput/CustomAutocompleteInput";
 
 setupIonicReact();
 
@@ -46,6 +47,7 @@ const App: React.FC = () => {
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
+      {/* <CustomAutocompleteInput/> */}
     </IonApp>
   );
 };

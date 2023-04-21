@@ -31,7 +31,8 @@ export default function HorariosPrestadores() {
   const [listadoPrestadores, setListadoPrestadores] = useState([]);
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState(-1);
   const [prestadorSeleccionado, setPrestadorSeleccionado] = useState(-1);
-  const [horario, setHorario] = useState(null);
+  const [horario, setHorario] = useState([]);
+  const [horarios, setHorarios] = useState(null);
 
   const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
   const mostrarNotificacion = (abrir, mensaje, tipo) => {
@@ -69,9 +70,52 @@ export default function HorariosPrestadores() {
         if (response.data.length !== 0) {
           horarios = response.data[0];
         } else {
-          horarios = null;
+          horarios = [];
         }
         setHorario(horarios);
+      }
+    } catch (e) {
+      mostrarNotificacion(
+        true,
+        "Ha ocurrido un error al intentar cargar los horarios del prestador",
+        "rojo"
+      );
+    }
+  };
+  const traerHorariosEspecialidad = async (prestadores) => {
+    let arrayHorarios = [];
+    let arrayHorariosMostrar = [];
+    const config = {
+      headers: { Authorization: `Bearer ${usuario.token}` },
+    };
+
+    try {
+      const servicio = await axios
+        .get(`${urlAxio}Servicios`, config)
+        .then((response) => {
+          if (response.data.length !== 0) {
+            return response.data;
+          } else {
+            return null;
+          }
+        });
+      if (servicio !== null && prestadores.length > 0) {
+        const response = await axios.get(
+          `${urlAxio}PrestadoresHorarios`,
+          config
+        );
+        if (response.data.length > 0) {
+          arrayHorarios = response.data;
+          arrayHorarios.forEach((horario) => {
+            prestadores.map((prestador) => {
+              if (prestador.codigo === horario.prestador)
+                arrayHorariosMostrar.push(horario);
+            });
+          });
+        } else {
+          arrayHorarios = [];
+        }
+        setHorario(arrayHorariosMostrar);
       }
     } catch (e) {
       mostrarNotificacion(
@@ -177,21 +221,18 @@ export default function HorariosPrestadores() {
     setCargando(true);
     switch (select) {
       case "Especialidad":
+          setHorario([]);
         setEspecialidadSeleccionada(value);
         if (value !== -1) {
-          setListadoPrestadores(
-            prestadores.filter(
-              (prestador) =>
-                prestador.especialidad === value ||
-                prestador.especialidad2 === value ||
-                prestador.especialidad3 === value
-            )
+          let arrayPrestadores = prestadores.filter(
+            (prestador) => prestador.especialidad === value
           );
+          setListadoPrestadores(arrayPrestadores);
+          traerHorariosEspecialidad(arrayPrestadores);
         } else {
           setListadoPrestadores(prestadores);
           setPrestadorSeleccionado(-1);
         }
-        setHorario(null);
         break;
       case "Prestador":
         prestadores.map((prestador) => {
@@ -200,7 +241,7 @@ export default function HorariosPrestadores() {
           }
         });
         setPrestadorSeleccionado(value);
-        traerHorariosPrestador(value);
+        // traerHorariosPrestador(value);
         break;
       default:
         mostrarNotificacion(true, "Seleccion invalida", "rojo");
@@ -216,36 +257,164 @@ export default function HorariosPrestadores() {
         {/*Filtros*/}
         <IonGrid>
           <IonRow>
-            <IonCol size="12" size-md="6">
+            <IonCol size="12" size-md="12">
               <IonItem>
                 <CustomDesplegable
                   array={especialidades}
                   value={especialidadSeleccionada}
                   handleChange={handleChangeSelect}
                   mostrarTodos={false}
+                  mostrarSearch={true}
                   label={"Seleccione un tipo de especialidad"}
                   id="Especialidad"
                 />
               </IonItem>
             </IonCol>
 
-            <IonCol size="12" size-md="6">
+            {/* <IonCol size="12" size-md="6">
               <IonItem>
                 <CustomDesplegable
                   array={listadoPrestadores}
                   value={prestadorSeleccionado}
                   handleChange={handleChangeSelect}
                   mostrarTodos={false}
+                  mostrarSearch={true}
                   label={"Seleccione un prestador"}
                   id="Prestador"
                 />
               </IonItem>
-            </IonCol>
+            </IonCol> */}
           </IonRow>
         </IonGrid>
 
-        {/* Tabla */}
+        {/* Tabla por especialidad*/}
         <IonList lines="none">
+          <IonGrid>
+            <IonItem className="fila cabecera">
+              <IonCol className="celda cabecera">
+                <p>Prestador</p>
+              </IonCol>
+              <IonCol className="celda cabecera">
+                <p>L</p>
+              </IonCol>
+              <IonCol className="celda cabecera">
+                <p>M</p>
+              </IonCol>
+              <IonCol className="celda cabecera">
+                <p>X</p>
+              </IonCol>
+              <IonCol className="celda cabecera">
+                <p>J</p>
+              </IonCol>
+              <IonCol className="celda cabecera">
+                <p>V</p>
+              </IonCol>
+              <IonCol className="celda cabecera">
+                <p>S</p>
+              </IonCol>
+              <IonCol className="celda cabecera">
+                <p>D</p>
+              </IonCol>
+            </IonItem>
+            {horario.length > 0 &&
+              horario.map((prestador) => (
+                <>
+                  <IonItem className="fila">
+                    <IonCol className="celda">
+                       {prestador.prestadorNom}
+                    </IonCol>
+                    <IonCol className="celda">
+                      <>
+                        {prestador.lunesM === ""
+                          ? prestador.lunesT === ""
+                            ? ""
+                            : prestador.lunesT
+                          : prestador.lunesM +
+                            (prestador.lunesT === ""
+                              ? ""
+                              : " y " + prestador.lunesT)}
+                      </>
+                    </IonCol>
+                    <IonCol className="celda">
+                      <>
+                        {prestador.martesM === ""
+                          ? prestador.martesT === ""
+                            ? ""
+                            : prestador.martesT
+                          : prestador.martesM +
+                            (prestador.martesT === ""
+                              ? ""
+                              : " y " + prestador.martesT)}
+                      </>
+                    </IonCol>
+                    <IonCol className="celda">
+                      <>
+                        {prestador.miercolesM === ""
+                          ? prestador.miercolesT === ""
+                            ? ""
+                            : prestador.miercolesT
+                          : prestador.miercolesM +
+                            (prestador.miercolesT === ""
+                              ? ""
+                              : " y " + prestador.miercolesT)}
+                      </>
+                    </IonCol>
+                    <IonCol className="celda">
+                      <>
+                        {prestador.juevesM === ""
+                          ? prestador.juevesT === ""
+                            ? ""
+                            : prestador.juevesT
+                          : prestador.juevesM +
+                            (prestador.juevesT === ""
+                              ? ""
+                              : " y " + prestador.juevesT)}
+                      </>
+                    </IonCol>
+                    <IonCol className="celda">
+                      <>
+                        {prestador.viernesM === ""
+                          ? prestador.viernesT === ""
+                            ? ""
+                            : prestador.viernesT
+                          : prestador.viernesM +
+                            (prestador.viernesT === ""
+                              ? ""
+                              : " y " + prestador.viernesT)}
+                      </>
+                    </IonCol>
+                    <IonCol className="celda">
+                      <>
+                        {prestador.sabadoM === ""
+                          ? prestador.sabadoT === ""
+                            ? ""
+                            : prestador.sabadoT
+                          : prestador.sabadoM +
+                            (prestador.sabadoT === ""
+                              ? ""
+                              : " y " + prestador.sabadoT)}
+                      </>
+                    </IonCol>
+                    <IonCol className="celda">
+                      <>
+                        {prestador.domingoM === ""
+                          ? prestador.domingoT === ""
+                            ? ""
+                            : prestador.domingoT
+                          : prestador.domingoM +
+                            (prestador.domingoT === ""
+                              ? ""
+                              : " y " + prestador.domingoT)}
+                      </>
+                    </IonCol>
+                  </IonItem>
+                </>
+              ))}
+          </IonGrid>
+        </IonList>
+
+        {/* Tabla por prestador*/}
+        {/* <IonList lines="none">
           <IonGrid>
             <IonItem className="fila cabecera">
               <IonCol className="celda cabecera" size="2">
@@ -457,7 +626,7 @@ export default function HorariosPrestadores() {
               </>
             ) : null}
           </IonGrid>
-        </IonList>
+        </IonList> */}
       </div>
 
       <CustomToast

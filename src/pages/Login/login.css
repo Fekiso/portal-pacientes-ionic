@@ -41,3 +41,12 @@
 ion-col {
   text-align: center;
 }
+.passwordInput input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.passwordInput input::-webkit-outer-spin-button,
+.passwordInput input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

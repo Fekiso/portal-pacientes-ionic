@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import {
-  IonSearchbar,
-  IonList,
   IonItem,
   IonLabel,
-  IonInput,
-  IonListHeader,
-  IonPopover,
-  IonButton,
+  IonList,
+  IonSearchbar,
+  IonSelect,
+  IonSelectOption,
 } from "@ionic/react";
 
 const options = [
@@ -40,39 +38,24 @@ const options = [
 ];
 
 const CustomAutocompleteInput = () => {
-  const [searchText, setSearchText] = useState("");
-  const [showPopover, setShowPopover] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
-
-  const handleSearchTextChange = (e) => {
-    const searchText = e.target.value;
-    setSearchText(searchText);
-    if (searchText === "") {
-      setShowPopover(false);
-    } else {
-      setShowPopover(true);
-    }
-  };
-
-  const handleOptionClick = (option) => {
-    setSearchText(option);
-    setShowPopover(false);
-  };
+  const [searchText, setSearchText] = useState('');
+  const filteredOptions = options.filter((opcion) =>
+    opcion.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <>
-      <IonSearchbar value={searchText} onIonChange={handleSearchTextChange} />
-      <IonPopover isOpen={showPopover} onDidDismiss={() => setShowPopover(false)}>
-        <IonList>
-          {options
-            .filter((option) => option.toLowerCase().includes(searchText.toLowerCase()))
-            .map((option, i) => (
-              <IonItem key={i} onClick={() => handleOptionClick(option)}>
-                {option}
-              </IonItem>
-            ))}
-        </IonList>
-      </IonPopover>
+      <IonSearchbar
+        value={searchText}
+        onIonChange={(e) => setSearchText(e.detail.value)}
+      />
+      <IonList>
+        {filteredOptions.map((opcion) => (
+          <IonItem key={opcion} button>
+            <IonLabel>{opcion}</IonLabel>
+          </IonItem>
+        ))}
+      </IonList>
     </>
   );
 };

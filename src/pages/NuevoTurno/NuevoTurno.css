@@ -37,10 +37,19 @@ ion-grid .tabla {
   /* color: #000; */
 }
 
+.tabla .celda.cabecera p {
+  --color: var(--ion-color-primary);
+}
+
 .tabla .fila.cabecera {
   font-weight: bold;
   border-bottom: solid 2px #9f9f9f;
   /* color: #000; */
+}
+
+.celda.cabecera p {
+  font-weight: bold;
+  --color: var(--ion-color-primary);
 }
 .tabla .fila:last-child {
   border-bottom: none;

@@ -102,12 +102,8 @@ export default function EstudiosPaciente() {
         };
       });
       setListadoEstudiosFiltro(Estudios);
-    } catch (e) {
-      mostrarNotificacion(
-        true,
-        "Ha ocurrido un error al intentar consultar los estudios",
-        "rojo"
-      );
+    } catch ({response}) {
+      mostrarNotificacion(true, "Error: " + response.data, "rojo");
     }
   };
 
@@ -243,6 +239,7 @@ export default function EstudiosPaciente() {
                           value={estudioSel}
                           handleChange={FiltrarEstudios}
                           mostrarTodos={true}
+                          mostrarSearch={true}
                           label={"Seleccione un tipo de estudio"}
                           id="Estudios"
                         />
@@ -265,7 +262,7 @@ export default function EstudiosPaciente() {
                   <p>Nombre de estudio</p>
                 </IonCol>
                 <IonCol className="celda cabecera">
-                  <p>Acciones</p>
+                  <p>Estudio</p>
                 </IonCol>
               </IonItem>
               {listadoEstudiosFiltrados.map((fila) => (
@@ -336,7 +333,7 @@ export default function EstudiosPaciente() {
               )}
             </IonContent>
           </IonActionSheet>
-          {/* <IonModal isOpen={abrirModal} backdropDismiss={false} expand="block">
+          <IonModal isOpen={abrirModal} backdropDismiss={false} expand="block">
             <IonHeader>
               <IonToolbar>
                 <IonTitle>
@@ -368,7 +365,7 @@ export default function EstudiosPaciente() {
                 </Document>
               )}
             </IonContent>
-          </IonModal> */}
+          </IonModal>
           <CustomToast
             openToast={toast.open}
             onDidDismiss={(e) => mostrarNotificacion(false, "", "")}

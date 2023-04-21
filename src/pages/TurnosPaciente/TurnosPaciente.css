@@ -24,3 +24,7 @@ ion-row {
 .fila.cabecera {
   font-weight: bold;
 }
+
+.celda.cabecera p {
+  color: var(--ion-color-secondary-shade) ;
+}

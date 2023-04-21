@@ -17,11 +17,11 @@ import {
 } from "@ionic/react";
 
 import { close, closeOutline } from "ionicons/icons";
-import "./TurnosPaciente.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
+import "./TurnosPaciente.css";
 
 export default function TurnosPaciente() {
   const [usuario, setUsuario] = useState({});
@@ -88,6 +88,7 @@ export default function TurnosPaciente() {
         } else {
           turnos = null;
         }
+        console.log(turnos);
         setListadoTurnos(turnos);
       }
     } catch (e) {
@@ -266,12 +267,8 @@ export default function TurnosPaciente() {
           );
         }
       }
-    } catch (error) {
-      mostrarNotificacion(
-        true,
-        "Ocurrió un problema al intentar cancelar el turno",
-        "rojo"
-      );
+    } catch ({ response }) {
+      mostrarNotificacion(true, "Error: " + response.data, "rojo");
     }
   };
 
@@ -366,6 +363,7 @@ export default function TurnosPaciente() {
                           value={especialidadSeleccionada}
                           handleChange={handleChangeSelect}
                           mostrarTodos={false}
+                          mostrarSearch={true}
                           label={"Seleccione un tipo de especialidad"}
                           id="Especialidad"
                         />
@@ -379,6 +377,7 @@ export default function TurnosPaciente() {
                           value={prestadorSeleccionado}
                           handleChange={handleChangeSelect}
                           mostrarTodos={false}
+                          mostrarSearch={true}
                           label={"Seleccione un prestador"}
                           id="Prestador"
                         />
@@ -393,6 +392,7 @@ export default function TurnosPaciente() {
                           value={filtroCancelados}
                           handleChange={handleChangeSelect}
                           mostrarTodos={true}
+                          mostrarSearch={false}
                           label={"Cancelados"}
                           id="Cancelados"
                         />
@@ -406,6 +406,7 @@ export default function TurnosPaciente() {
                           value={filtroAsistidos}
                           handleChange={handleChangeSelect}
                           mostrarTodos={true}
+                          mostrarSearch={false}
                           label={"Asistidos"}
                           id="Asistidos"
                         />
@@ -431,13 +432,13 @@ export default function TurnosPaciente() {
                   <p>Mutual</p>
                 </IonCol>
                 <IonCol className="celda cabecera">
-                  <p>Cancelado</p>
-                </IonCol>
-                <IonCol className="celda cabecera">
                   <p>Asistido</p>
                 </IonCol>
                 <IonCol className="celda cabecera">
-                  <p>Acciones</p>
+                  <p>Cancelado</p>
+                </IonCol>
+                <IonCol className="celda cabecera">
+                  <p>Cancelar</p>
                 </IonCol>
               </IonItem>
               {FiltrarTurnos(listadoTurnos).map((fila) => (
@@ -454,36 +455,45 @@ export default function TurnosPaciente() {
                     <p>{fila.mutualNom}</p>
                   </IonCol>
                   <IonCol className="celda">
-                    <p>{fila.aCancelar ? "Si" : "No"}</p>
-                  </IonCol>
-                  <IonCol className="celda">
                     <p>{fila.asistio ? "Si" : "No"}</p>
                   </IonCol>
-                  <IonCol className="celda">
-                    {dayjs(fila.fecha).isAfter(new dayjs()) ? (
-                      // <div className="iconColumn">
-                      <IonButton
-                        shape="roud"
-                        fill="clear"
-                        onClick={() => handleClickSeleccionarTurno(fila)}
-                      >
-                        <IonIcon
-                          size="large"
-                          aria-label="Cancelar turno"
-                          ios={closeOutline}
-                          md={close}
-                        />
-                      </IonButton>
-                    ) : // </div>
-                    null}
-                  </IonCol>
+                  {!fila.asistio ? (
+                    <>
+                      <IonCol className="celda">
+                        <p>{!fila.aCancelar && "Si"}</p>
+                      </IonCol>
+                      <IonCol className="celda">
+                        {dayjs(fila.fecha).isAfter(new dayjs()) &&
+                          fila.aCancelar && (
+                            // <div className="iconColumn">
+                            <IonButton
+                              shape="roud"
+                              fill="clear"
+                              onClick={() => handleClickSeleccionarTurno(fila)}
+                            >
+                              <IonIcon
+                                size="large"
+                                aria-label="Cancelar turno"
+                                ios={closeOutline}
+                                md={close}
+                              />
+                            </IonButton>
+                          )}
+                      </IonCol>
+                    </>
+                  ) : (
+                    <>
+                      <IonCol className="celda" />
+                      <IonCol className="celda" />
+                    </>
+                  )}
                 </IonItem>
               ))}
             </IonGrid>
           </IonList>
 
           <DialogoConfirmacion
-            titulo="Reservar turno"
+            titulo="Cancelar turno"
             contenido={`Ha decidido cancelar el turno con el/la prestador/a ${
               turnoSeleccionado.prestadorNom
             }, con especialidad en ${

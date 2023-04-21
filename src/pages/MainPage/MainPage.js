@@ -51,15 +51,13 @@ const MainPage = (props) => {
     };
 
     try {
-      const servicio = await axios
-        .get(`${url}Servicios`, config)
-        .then((response) => {
-          if (response.data.length !== 0) {
-            return response.data;
-          } else {
-            return null;
-          }
-        });
+      const servicio = await axios.get(`${url}Servicios`, config).then((response) => {
+        if (response.data.length !== 0) {
+          return response.data;
+        } else {
+          return null;
+        }
+      });
       if (servicio !== null) {
         const response = await axios.get(
           `${url}Turnos/TurnosPaciente/?paciente=${paciente.codigo}&servicio=${servicio[0].codigo}`,
@@ -70,7 +68,27 @@ const MainPage = (props) => {
           turnos = turnos.filter((turno) => {
             return dayjs(new dayjs()).isBefore(dayjs(turno.fecha));
           });
-          turnos = turnos.sort((turnoA, turnoB) => turnoA.fecha > turnoB.fecha);
+          turnos = turnos.sort((a, b) => {
+            const fechaA = dayjs(a.fecha);
+            const fechaB = dayjs(b.fecha);
+
+            if (fechaA.isBefore(fechaB)) {
+              return -1;
+            } else if (fechaA.isAfter(fechaB)) {
+              return 1;
+            } else {
+              const horaA = dayjs(a.hora, "HH:mm:ss");
+              const horaB = dayjs(b.hora, "HH:mm:ss");
+
+              if (horaA.isBefore(horaB)) {
+                return -1;
+              } else if (horaA.isAfter(horaB)) {
+                return 1;
+              } else {
+                return 0;
+              }
+            }
+          });
           turnos = turnos.slice(0, 5);
         } else {
           turnos = [];
@@ -124,27 +142,15 @@ const MainPage = (props) => {
     <IonGrid>
       <IonRow>
         <IonCol>
-          <IonItem
-            detail={true}
-            lines="none"
-            onClick={() => handleClickRedirigir("Reservar")}
-          >
+          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Reservar")}>
             <IonAvatar slot="start">
-              <IonIcon
-                ios={calendarNumberOutline}
-                md={calendarNumber}
-                size="large"
-              />
+              <IonIcon ios={calendarNumberOutline} md={calendarNumber} size="large" />
             </IonAvatar>
             <IonLabel>Reservar un nuevo turno</IonLabel>
           </IonItem>
         </IonCol>
         <IonCol>
-          <IonItem
-            detail={true}
-            lines="none"
-            onClick={() => handleClickRedirigir("Horarios")}
-          >
+          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Horarios")}>
             <IonAvatar slot="start">
               <IonIcon ios={peopleOutline} md={people} size="large" />
             </IonAvatar>
@@ -154,11 +160,7 @@ const MainPage = (props) => {
       </IonRow>
       <IonRow>
         <IonCol>
-          <IonItem
-            detail={true}
-            lines="none"
-            onClick={() => handleClickRedirigir("Turnos")}
-          >
+          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Turnos")}>
             <IonAvatar slot="start">
               <IonIcon ios={calendarOutline} md={calendar} size="large" />
             </IonAvatar>
@@ -166,17 +168,9 @@ const MainPage = (props) => {
           </IonItem>
         </IonCol>
         <IonCol>
-          <IonItem
-            detail={true}
-            lines="none"
-            onClick={() => handleClickRedirigir("Estudios")}
-          >
+          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Estudios")}>
             <IonAvatar slot="start">
-              <IonIcon
-                ios={fileTrayFullOutline}
-                md={fileTrayFull}
-                size="large"
-              />
+              <IonIcon ios={fileTrayFullOutline} md={fileTrayFull} size="large" />
             </IonAvatar>
             <IonLabel>Consultar mis estudios</IonLabel>
           </IonItem>
@@ -188,7 +182,7 @@ const MainPage = (props) => {
         <IonAccordionGroup expand="inset">
           <IonAccordion value={"a"}>
             <IonItem slot="header" color="light">
-              <IonText>Proximos turnos</IonText>
+              <IonText>Tus proximos turnos</IonText>
             </IonItem>
             <div slot="content">
               <IonList lines="none">
@@ -201,12 +195,8 @@ const MainPage = (props) => {
                   </IonItem>
                   {listadoTurnos.map((fila) => (
                     <IonItem key={fila.nombre} className="fila">
-                      <IonCol className="celda">
-                        {dayjs(fila.fecha).format("DD/MM/YYYY")}
-                      </IonCol>
-                      <IonCol className="celda">
-                        {dayjs(fila.hora).format("HH:MM")}
-                      </IonCol>
+                      <IonCol className="celda">{dayjs(fila.fecha).format("DD/MM/YYYY")}</IonCol>
+                      <IonCol className="celda">{dayjs(fila.hora).format("HH:MM")}</IonCol>
                       <IonCol className="celda">{fila.prestadorNom}</IonCol>
                       <IonCol className="celda">{fila.mutualNom}</IonCol>
                     </IonItem>
