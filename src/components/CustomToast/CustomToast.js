@@ -1,17 +1,14 @@
+import { useEffect, useState } from "react";
 import { IonToast } from "@ionic/react";
 import {
-  alertCircleOutline,
   alertOutline,
-  checkmarkCircleOutline,
-  checkmarkDoneOutline,
   checkmarkOutline,
   closeOutline,
-  informationCircle,
   informationOutline,
   warningOutline,
 } from "ionicons/icons";
-import { useEffect, useState } from "react";
 import "./CustomToast.css";
+
 function CustomToast({ openToast, onDidDismiss, message, colorNotificacion }) {
   const [color, setColor] = useState("");
   const [icon, setIcon] = useState();

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { IonApp, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route, Switch } from "react-router-dom";
@@ -24,8 +23,6 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import LoginIonic from "./pages/Login/Login";
 import PageError from "./pages/PageError/PageError";
-
-import CustomAutocompleteInput from "./components/CustomAutocompleteInput/CustomAutocompleteInput";
 
 setupIonicReact();
 

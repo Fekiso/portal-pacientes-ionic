@@ -1,33 +1,22 @@
 import {
-  IonAlert,
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardHeader,
-  IonCol,
   IonContent,
-  IonDatetime,
-  IonDatetimeButton,
   IonFooter,
   IonHeader,
   IonIcon,
   IonInput,
   IonItem,
-  IonLabel,
   IonList,
-  IonListHeader,
   IonModal,
   IonNote,
   IonPopover,
   IonRow,
   IonTitle,
-  IonToast,
   IonToolbar,
 } from "@ionic/react";
 import axios from "axios";
 import dayjs from "dayjs";
-import { alert, alertOutline, closeOutline } from "ionicons/icons";
-import React, { useEffect, useState } from "react";
+import { alert, alertOutline } from "ionicons/icons";
+import { useEffect, useState } from "react";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -25,12 +25,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 
-import {
-  cloudDownload,
-  cloudDownloadOutline,
-  eye,
-  eyeOutline,
-} from "ionicons/icons";
+import { cloudDownload, cloudDownloadOutline, eye, eyeOutline } from "ionicons/icons";
 import "./EstudiosPaciente.css";
 
 import { Document, Page, pdfjs } from "react-pdf";
@@ -78,10 +73,7 @@ export default function EstudiosPaciente() {
     };
 
     try {
-      const response = await axios.get(
-        `${url}EstudiosImagenes/${paciente.codigo}`,
-        config
-      );
+      const response = await axios.get(`${url}EstudiosImagenes/${paciente.codigo}`, config);
       if (response.data.length !== 0) {
         Estudios = response.data;
       } else {
@@ -91,8 +83,7 @@ export default function EstudiosPaciente() {
       setListadoEstudios(Estudios);
       setListadoEstudiosFiltrados(Estudios);
       Estudios = Estudios.filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.estudioCod === item.estudioCod)
+        (item, index, self) => index === self.findIndex((t) => t.estudioCod === item.estudioCod)
       );
       Estudios = Estudios.map((estudio) => {
         return {
@@ -102,7 +93,7 @@ export default function EstudiosPaciente() {
         };
       });
       setListadoEstudiosFiltro(Estudios);
-    } catch ({response}) {
+    } catch ({ response }) {
       mostrarNotificacion(true, "Error: " + response.data, "rojo");
     }
   };
@@ -140,9 +131,7 @@ export default function EstudiosPaciente() {
         if (pdfDoc && !pdfUrl) {
           fileDownload(
             pdfBlob,
-            `${estudio.estudioNom}-${dayjs(estudio.fecha).format(
-              "DD/MM/YYYY"
-            )}.pdf`
+            `${estudio.estudioNom}-${dayjs(estudio.fecha).format("DD/MM/YYYY")}.pdf`
           );
         } else {
           if (!pdfDoc && pdfUrl) {
@@ -275,23 +264,11 @@ export default function EstudiosPaciente() {
                   </IonCol>
                   <IonCol className="celda" itemProp="">
                     <div className="iconColumn">
-                      <IonButton
-                        shape="roud"
-                        fill="clear"
-                        onClick={() => VisualizarPdf(fila)}
-                      >
+                      <IonButton shape="roud" fill="clear" onClick={() => VisualizarPdf(fila)}>
                         <IonIcon size="large" ios={eyeOutline} md={eye} />
                       </IonButton>
-                      <IonButton
-                        shape="roud"
-                        fill="clear"
-                        onClick={() => DescargarPdf(fila)}
-                      >
-                        <IonIcon
-                          size="large"
-                          ios={cloudDownloadOutline}
-                          md={cloudDownload}
-                        />
+                      <IonButton shape="roud" fill="clear" onClick={() => DescargarPdf(fila)}>
+                        <IonIcon size="large" ios={cloudDownloadOutline} md={cloudDownload} />
                       </IonButton>
                     </div>
                   </IonCol>
@@ -301,9 +278,7 @@ export default function EstudiosPaciente() {
           </IonList>
 
           <IonActionSheet
-            header={`${estudioPdf.nombre}-${dayjs(estudioPdf.fecha).format(
-              "DD/MM/YYYY"
-            )}`}
+            header={`${estudioPdf.nombre}-${dayjs(estudioPdf.fecha).format("DD/MM/YYYY")}`}
             buttons={[
               {
                 text: "Cancelar",
@@ -317,10 +292,7 @@ export default function EstudiosPaciente() {
           >
             <IonContent className="ion-padding">
               {estudioPdf.doc && (
-                <Document
-                  file={estudioPdf.doc}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                >
+                <Document file={estudioPdf.doc} onLoadSuccess={onDocumentLoadSuccess}>
                   {[...Array(numPages)].map((_, index) => (
                     <Page
                       key={`page_${index + 1}`}
@@ -337,9 +309,7 @@ export default function EstudiosPaciente() {
             <IonHeader>
               <IonToolbar>
                 <IonTitle>
-                  {`${estudioPdf.nombre}-${dayjs(estudioPdf.fecha).format(
-                    "DD/MM/YYYY"
-                  )}`}
+                  {`${estudioPdf.nombre}-${dayjs(estudioPdf.fecha).format("DD/MM/YYYY")}`}
                 </IonTitle>
                 <IonButtons slot="end">
                   <IonButton strong={true} onClick={() => abrirCerrarModal()}>
@@ -350,10 +320,7 @@ export default function EstudiosPaciente() {
             </IonHeader>
             <IonContent className="ion-padding">
               {estudioPdf.doc && (
-                <Document
-                  file={estudioPdf.doc}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                >
+                <Document file={estudioPdf.doc} onLoadSuccess={onDocumentLoadSuccess}>
                   {[...Array(numPages)].map((_, index) => (
                     <Page
                       key={`page_${index + 1}`}

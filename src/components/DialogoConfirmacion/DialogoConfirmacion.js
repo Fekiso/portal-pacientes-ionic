@@ -1,6 +1,7 @@
-import { IonAlert, IonButton } from "@ionic/react";
+import { IonAlert } from "@ionic/react";
 import { useEffect, useState } from "react";
 import "./DialogoConfirmacion.css";
+
 export default function DialogoConfirmacion({
   titulo,
   contenido,

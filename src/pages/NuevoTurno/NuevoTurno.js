@@ -13,7 +13,6 @@ import {
   IonRow,
 } from "@ionic/react";
 
-import { close, closeOutline } from "ionicons/icons";
 import "./NuevoTurno.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import StyledButton from "../../components/StyledButton/StyledButton";

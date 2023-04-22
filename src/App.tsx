@@ -1,9 +1,4 @@
-import {
-  IonApp,
-  IonRouterOutlet,
-  IonSplitPane,
-  setupIonicReact,
-} from "@ionic/react";
+import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 import Page from "./pages/PageContainer/Page";
@@ -27,7 +22,6 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 import Menu from "./components/Menu/Menu";
-import CustomAutocompleteInput from "./components/CustomAutocompleteInput/CustomAutocompleteInput";
 
 setupIonicReact();
 
@@ -47,7 +41,6 @@ const App: React.FC = () => {
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
-      {/* <CustomAutocompleteInput/> */}
     </IonApp>
   );
 };

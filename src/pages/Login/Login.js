@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   IonCard,
   IonCardContent,
@@ -25,7 +26,6 @@ import {
   person,
   personOutline,
 } from "ionicons/icons";
-import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import StyledButton from "../../components/StyledButton/StyledButton";
 import NuevoPaciente from "../NuevoPaciente/NuevoPaciente";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./PageError.css";
 import {
   IonCard,
@@ -11,7 +11,6 @@ import {
   IonItem,
   IonRow,
   IonText,
-  IonThumbnail,
 } from "@ionic/react";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 import { useHistory } from "react-router";
@@ -66,44 +65,28 @@ const PageError = (props) => {
             </IonCardHeader>
             <IonCardContent>
               <IonItem>
-                <IonIcon
-                  slot="start"
-                  size="large"
-                  color="danger"
-                  ios={alertOutline}
-                  md={alert}
-                />
+                <IonIcon slot="start" size="large" color="danger" ios={alertOutline} md={alert} />
                 <IonText color="danger">
                   {(!usuario || motivo === "sesion perdida") && (
                     <>
                       <h2>
                         {"Tu sesion ha expirado "}
-                        <a href="/">
-                          presiona aqui para redireccionarte al login
-                        </a>
+                        <a href="/">presiona aqui para redireccionarte al login</a>
                       </h2>
                     </>
                   )}
                   {motivo === "404" && usuario?.codigo && (
                     <>
                       <h2>
-                        No sabemos como pero has llegado a una ventana
-                        inexitente\n
+                        No sabemos como pero has llegado a una ventana inexitente\n
                         <a href="/page/">
-                          presiona aqui para para redireccionarte a la pagina
-                          principal
+                          presiona aqui para para redireccionarte a la pagina principal
                         </a>
                       </h2>
                     </>
                   )}
                 </IonText>
-                <IonIcon
-                  slot="end"
-                  size="large"
-                  color="danger"
-                  ios={alertOutline}
-                  md={alert}
-                />
+                <IonIcon slot="end" size="large" color="danger" ios={alertOutline} md={alert} />
               </IonItem>
             </IonCardContent>
           </IonCard>

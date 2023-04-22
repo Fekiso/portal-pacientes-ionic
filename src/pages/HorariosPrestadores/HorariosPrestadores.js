@@ -3,19 +3,8 @@ import { useHistory } from "react-router";
 import axios from "axios";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
-import {
-  IonAccordion,
-  IonAccordionGroup,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonRow,
-} from "@ionic/react";
+import { IonCol, IonGrid, IonItem, IonList, IonRow } from "@ionic/react";
 
-import { close, closeOutline } from "ionicons/icons";
 import "./HorariosPrestadores.css";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
@@ -32,7 +21,6 @@ export default function HorariosPrestadores() {
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState(-1);
   const [prestadorSeleccionado, setPrestadorSeleccionado] = useState(-1);
   const [horario, setHorario] = useState([]);
-  const [horarios, setHorarios] = useState(null);
 
   const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
   const mostrarNotificacion = (abrir, mensaje, tipo) => {
@@ -53,20 +41,15 @@ export default function HorariosPrestadores() {
     };
 
     try {
-      const servicio = await axios
-        .get(`${urlAxio}Servicios`, config)
-        .then((response) => {
-          if (response.data.length !== 0) {
-            return response.data;
-          } else {
-            return null;
-          }
-        });
+      const servicio = await axios.get(`${urlAxio}Servicios`, config).then((response) => {
+        if (response.data.length !== 0) {
+          return response.data;
+        } else {
+          return null;
+        }
+      });
       if (servicio !== null && prestador !== -1) {
-        const response = await axios.get(
-          `${urlAxio}PrestadoresHorarios/${prestador}`,
-          config
-        );
+        const response = await axios.get(`${urlAxio}PrestadoresHorarios/${prestador}`, config);
         if (response.data.length !== 0) {
           horarios = response.data[0];
         } else {
@@ -82,6 +65,7 @@ export default function HorariosPrestadores() {
       );
     }
   };
+
   const traerHorariosEspecialidad = async (prestadores) => {
     let arrayHorarios = [];
     let arrayHorariosMostrar = [];
@@ -90,26 +74,20 @@ export default function HorariosPrestadores() {
     };
 
     try {
-      const servicio = await axios
-        .get(`${urlAxio}Servicios`, config)
-        .then((response) => {
-          if (response.data.length !== 0) {
-            return response.data;
-          } else {
-            return null;
-          }
-        });
+      const servicio = await axios.get(`${urlAxio}Servicios`, config).then((response) => {
+        if (response.data.length !== 0) {
+          return response.data;
+        } else {
+          return null;
+        }
+      });
       if (servicio !== null && prestadores.length > 0) {
-        const response = await axios.get(
-          `${urlAxio}PrestadoresHorarios`,
-          config
-        );
+        const response = await axios.get(`${urlAxio}PrestadoresHorarios`, config);
         if (response.data.length > 0) {
           arrayHorarios = response.data;
           arrayHorarios.forEach((horario) => {
             prestadores.map((prestador) => {
-              if (prestador.codigo === horario.prestador)
-                arrayHorariosMostrar.push(horario);
+              if (prestador.codigo === horario.prestador) arrayHorariosMostrar.push(horario);
             });
           });
         } else {
@@ -141,9 +119,7 @@ export default function HorariosPrestadores() {
         especialidades = null;
       }
 
-      especialidades = especialidades.filter(
-        (especialidad) => especialidad.vigente === true
-      );
+      especialidades = especialidades.filter((especialidad) => especialidad.vigente === true);
 
       especialidades = especialidades.map((especialidad) => {
         return {
@@ -177,9 +153,7 @@ export default function HorariosPrestadores() {
         prestadores = null;
       }
 
-      prestadores = prestadores.filter(
-        (prestador) => prestador.vigente === true
-      );
+      prestadores = prestadores.filter((prestador) => prestador.vigente === true);
 
       prestadores = prestadores.map((prestador) => {
         return {
@@ -221,7 +195,7 @@ export default function HorariosPrestadores() {
     setCargando(true);
     switch (select) {
       case "Especialidad":
-          setHorario([]);
+        setHorario([]);
         setEspecialidadSeleccionada(value);
         if (value !== -1) {
           let arrayPrestadores = prestadores.filter(
@@ -320,9 +294,7 @@ export default function HorariosPrestadores() {
               horario.map((prestador) => (
                 <>
                   <IonItem className="fila">
-                    <IonCol className="celda">
-                       {prestador.prestadorNom}
-                    </IonCol>
+                    <IonCol className="celda">{prestador.prestadorNom}</IonCol>
                     <IonCol className="celda">
                       <>
                         {prestador.lunesM === ""
@@ -330,9 +302,7 @@ export default function HorariosPrestadores() {
                             ? ""
                             : prestador.lunesT
                           : prestador.lunesM +
-                            (prestador.lunesT === ""
-                              ? ""
-                              : " y " + prestador.lunesT)}
+                            (prestador.lunesT === "" ? "" : " y " + prestador.lunesT)}
                       </>
                     </IonCol>
                     <IonCol className="celda">
@@ -342,9 +312,7 @@ export default function HorariosPrestadores() {
                             ? ""
                             : prestador.martesT
                           : prestador.martesM +
-                            (prestador.martesT === ""
-                              ? ""
-                              : " y " + prestador.martesT)}
+                            (prestador.martesT === "" ? "" : " y " + prestador.martesT)}
                       </>
                     </IonCol>
                     <IonCol className="celda">
@@ -354,9 +322,7 @@ export default function HorariosPrestadores() {
                             ? ""
                             : prestador.miercolesT
                           : prestador.miercolesM +
-                            (prestador.miercolesT === ""
-                              ? ""
-                              : " y " + prestador.miercolesT)}
+                            (prestador.miercolesT === "" ? "" : " y " + prestador.miercolesT)}
                       </>
                     </IonCol>
                     <IonCol className="celda">
@@ -366,9 +332,7 @@ export default function HorariosPrestadores() {
                             ? ""
                             : prestador.juevesT
                           : prestador.juevesM +
-                            (prestador.juevesT === ""
-                              ? ""
-                              : " y " + prestador.juevesT)}
+                            (prestador.juevesT === "" ? "" : " y " + prestador.juevesT)}
                       </>
                     </IonCol>
                     <IonCol className="celda">
@@ -378,9 +342,7 @@ export default function HorariosPrestadores() {
                             ? ""
                             : prestador.viernesT
                           : prestador.viernesM +
-                            (prestador.viernesT === ""
-                              ? ""
-                              : " y " + prestador.viernesT)}
+                            (prestador.viernesT === "" ? "" : " y " + prestador.viernesT)}
                       </>
                     </IonCol>
                     <IonCol className="celda">
@@ -390,9 +352,7 @@ export default function HorariosPrestadores() {
                             ? ""
                             : prestador.sabadoT
                           : prestador.sabadoM +
-                            (prestador.sabadoT === ""
-                              ? ""
-                              : " y " + prestador.sabadoT)}
+                            (prestador.sabadoT === "" ? "" : " y " + prestador.sabadoT)}
                       </>
                     </IonCol>
                     <IonCol className="celda">
@@ -402,9 +362,7 @@ export default function HorariosPrestadores() {
                             ? ""
                             : prestador.domingoT
                           : prestador.domingoM +
-                            (prestador.domingoT === ""
-                              ? ""
-                              : " y " + prestador.domingoT)}
+                            (prestador.domingoT === "" ? "" : " y " + prestador.domingoT)}
                       </>
                     </IonCol>
                   </IonItem>
