@@ -13,6 +13,7 @@ import { Route, useParams } from "react-router";
 import ExploreContainer from "../../components/ExploreContainer/ExploreContainer";
 import Menu from "../../components/Menu/Menu";
 import "./Page.css";
+import { useState } from "react";
 
 const Page = () => {
   const { name } = useParams<{ name: string }>();

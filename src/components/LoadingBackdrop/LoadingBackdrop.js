@@ -1,4 +1,5 @@
 import { IonBackdrop, IonSpinner } from "@ionic/react";
+import React from "react";
 import "./LoadingBackdrop.css";
 
 const LoadingBackdrop = (visualizar) => {

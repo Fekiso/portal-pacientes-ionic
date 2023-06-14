@@ -26,10 +26,10 @@ import {
 } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import "./MainPage.css";
 
 const MainPage = (props) => {
   const [cargando, setCargando] = useState(false);
+  const [paciente, setPaciente] = useState({});
   const [listadoTurnos, setListadoTurnos] = useState([]);
   const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
   const mostrarNotificacion = (abrir, mensaje, tipo) => {
@@ -110,6 +110,7 @@ const MainPage = (props) => {
       const sesion = JSON.parse(sessionStorage.getItem("ppUL"));
       if (sesion !== {}) {
         traerTurnosPaciente(sesion);
+        setPaciente(sesion);
         document.title = localStorage.getItem("tituloWeb");
       }
     } catch (e) {
@@ -142,7 +143,12 @@ const MainPage = (props) => {
     <IonGrid>
       <IonRow>
         <IonCol>
-          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Reservar")}>
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Reservar")}
+            className="amarillo-sol"
+          >
             <IonAvatar slot="start">
               <IonIcon ios={calendarNumberOutline} md={calendarNumber} size="large" />
             </IonAvatar>
@@ -150,7 +156,12 @@ const MainPage = (props) => {
           </IonItem>
         </IonCol>
         <IonCol>
-          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Horarios")}>
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Horarios")}
+            className="amarillo-sol"
+          >
             <IonAvatar slot="start">
               <IonIcon ios={peopleOutline} md={people} size="large" />
             </IonAvatar>
@@ -160,7 +171,12 @@ const MainPage = (props) => {
       </IonRow>
       <IonRow>
         <IonCol>
-          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Turnos")}>
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Turnos")}
+            className="amarillo-sol"
+          >
             <IonAvatar slot="start">
               <IonIcon ios={calendarOutline} md={calendar} size="large" />
             </IonAvatar>
@@ -168,7 +184,12 @@ const MainPage = (props) => {
           </IonItem>
         </IonCol>
         <IonCol>
-          <IonItem detail={true} lines="none" onClick={() => handleClickRedirigir("Estudios")}>
+          <IonItem
+            detail={true}
+            lines="none"
+            onClick={() => handleClickRedirigir("Estudios")}
+            className="amarillo-sol"
+          >
             <IonAvatar slot="start">
               <IonIcon ios={fileTrayFullOutline} md={fileTrayFull} size="large" />
             </IonAvatar>
@@ -176,7 +197,34 @@ const MainPage = (props) => {
           </IonItem>
         </IonCol>
       </IonRow>
-
+      <IonRow>
+        <IonCol>
+          <IonItem
+            detail={true}
+            lines="none"
+            href="http://laboratorio.clinicadelsol.com.ar:1010/ESTATICOClavePacientes.html"
+            className="amarillo-sol"
+          >
+            <IonAvatar slot="start">
+              <IonIcon ios={calendarOutline} md={calendar} size="large" />
+            </IonAvatar>
+            <IonLabel>Laboratorio</IonLabel>
+          </IonItem>
+        </IonCol>
+        <IonCol>
+          <IonItem
+            detail={true}
+            lines="none"
+            href={`http://imagenes.clinicadelsol.com.ar//intuser.php?usn=${paciente.documentoNro}&pwn=${paciente.documentoNro}`}
+            className="amarillo-sol"
+          >
+            <IonAvatar slot="start">
+              <IonIcon ios={fileTrayFullOutline} md={fileTrayFull} size="large" />
+            </IonAvatar>
+            <IonLabel>Imagenes</IonLabel>
+          </IonItem>
+        </IonCol>
+      </IonRow>
       {/*Tabla*/}
       {listadoTurnos.length > 0 && (
         <IonAccordionGroup expand="inset">
@@ -187,14 +235,14 @@ const MainPage = (props) => {
             <div slot="content">
               <IonList lines="none">
                 <IonGrid>
-                  <IonItem className="fila cabecera">
+                  <IonItem className="fila cabecera amarillo-sol">
                     <IonCol className="celda cabecera">Fecha</IonCol>
                     <IonCol className="celda cabecera">Hora</IonCol>
                     <IonCol className="celda cabecera">Prestador</IonCol>
                     <IonCol className="celda cabecera">Mutual</IonCol>
                   </IonItem>
                   {listadoTurnos.map((fila) => (
-                    <IonItem key={fila.nombre} className="fila">
+                    <IonItem key={fila.nombre} className="fila amarillo-sol">
                       <IonCol className="celda">{dayjs(fila.fecha).format("DD/MM/YYYY")}</IonCol>
                       <IonCol className="celda">{dayjs(fila.hora).format("HH:MM")}</IonCol>
                       <IonCol className="celda">{fila.prestadorNom}</IonCol>

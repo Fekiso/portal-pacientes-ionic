@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -26,7 +26,6 @@ import {
 } from "@ionic/react";
 
 import { cloudDownload, cloudDownloadOutline, eye, eyeOutline } from "ionicons/icons";
-import "./EstudiosPaciente.css";
 
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/TextLayer.css";
@@ -204,7 +203,7 @@ export default function EstudiosPaciente() {
         <IonGrid>
           <IonRow className="ion-justify-content-center">
             <IonCol>
-              <div class="ion-text-center">
+              <div className="ion-text-center">
                 <p>No tiene estudios registrados aun</p>
               </div>
             </IonCol>
@@ -215,7 +214,7 @@ export default function EstudiosPaciente() {
           {/*Desplegable con filtros*/}
           <IonAccordionGroup expand="inset">
             <IonAccordion value={"a"}>
-              <IonItem slot="header" color="light">
+              <IonItem slot="header" color="light" className="amarillo-sol">
                 <IonLabel>Filtrar</IonLabel>
               </IonItem>
               <div slot="content">
@@ -243,7 +242,7 @@ export default function EstudiosPaciente() {
           {/* Tabla */}
           <IonList lines="none">
             <IonGrid>
-              <IonItem className="fila cabecera">
+              <IonItem className="fila cabecera amarillo-sol">
                 <IonCol className="celda cabecera">
                   <p>Fecha</p>
                 </IonCol>
@@ -255,7 +254,7 @@ export default function EstudiosPaciente() {
                 </IonCol>
               </IonItem>
               {listadoEstudiosFiltrados.map((fila) => (
-                <IonItem key={fila.nombre} className="fila">
+                <IonItem key={fila.nombre} className="fila amarillo-sol">
                   <IonCol className="celda">
                     <p>{dayjs(fila.fecha).format("DD/MM/YYYY")}</p>
                   </IonCol>

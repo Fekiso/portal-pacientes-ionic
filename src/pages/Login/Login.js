@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import {
+  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -26,10 +26,10 @@ import {
   person,
   personOutline,
 } from "ionicons/icons";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import StyledButton from "../../components/StyledButton/StyledButton";
 import NuevoPaciente from "../NuevoPaciente/NuevoPaciente";
-import "./login.css";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 
@@ -181,7 +181,7 @@ const LoginIonic = () => {
             </IonCardHeader>
             <IonCardContent>
               <IonList>
-                <IonItem lines="none" fill="solid">
+                <IonItem lines="none" fill="solid" className="amarillo-sol">
                   <IonLabel position="floating">Nro de documento</IonLabel>
                   <IonIcon
                     aria-hidden="true"
@@ -192,7 +192,9 @@ const LoginIonic = () => {
                     size="small"
                   />
                   <IonPopover trigger="btnHelpNrodocumento" triggerAction="click">
-                    <IonContent class="ion-padding">Solo se aceptan valores numericos</IonContent>
+                    <IonContent className="ion-padding">
+                      Solo se aceptan valores numericos
+                    </IonContent>
                   </IonPopover>
                   <IonInput
                     value={usuario.usuario}
@@ -202,18 +204,23 @@ const LoginIonic = () => {
                   />
                   <IonIcon aria-hidden="true" slot="end" ios={personOutline} md={person} />
                 </IonItem>
-                <IonItem lines="none" fill="solid" className={`${errorPassword && "ion-invalid"}`}>
+                <IonItem
+                  lines="none"
+                  fill="solid"
+                  className={`amarillo-sol ${errorPassword && "ion-invalid"}`}
+                >
                   <IonLabel position="floating">Contraseña</IonLabel>
+
                   <IonIcon
                     aria-hidden="true"
-                    slot="start"
                     ios={helpOutline}
                     md={help}
                     id="btnHelpPassword"
                     size="small"
+                    slot="start"
                   />
                   <IonPopover trigger="btnHelpPassword" triggerAction="click">
-                    <IonContent class="ion-padding">
+                    <IonContent className="ion-padding">
                       Si es su primera vez ingresando, ingrese su numero de documento
                     </IonContent>
                   </IonPopover>
@@ -236,7 +243,7 @@ const LoginIonic = () => {
               <StyledButton
                 lines="none"
                 size="large"
-                className="violeta justify-content-center"
+                className="amarillo-sol justify-content-center"
                 onClick={handleClickSubmit}
               >
                 Ingresar
@@ -244,7 +251,7 @@ const LoginIonic = () => {
               <StyledButton
                 lines="none"
                 fill="clear"
-                className="justify-content-center"
+                className="justify-content-center amarillo-sol-text"
                 onClick={(e) => setRegistrarPaciente(true)}
               >
                 <h5>¿No es paciente?, REGISTRESE</h5>

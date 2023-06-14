@@ -4,6 +4,19 @@ ion-button {
   /* font-weight: bold; */
 }
 
+ion-button.amarillo-sol {
+  --color: #dc852d;
+  --background: #f1c7ab;
+  --background-hover: var(--ion-color-favorite-tint);
+  /*--background-focused: var(--ion-color-warning-shade); */
+}
+
+ion-button.amarillo-sol-text {
+  --color: #dc852d;
+  /* --background: #f1c7ab;
+  --background-hover: var(--ion-color-favorite-tint); */
+  /*--background-focused: var(--ion-color-warning-shade); */
+}
 ion-button.azul {
   --color: var(--ion-color-primary-contrast);
   --background: var(--ion-color-primary-tint);

@@ -85,9 +85,7 @@ const Menu = () => {
             return (
               <IonMenuToggle key={index} autoHide={false}>
                 <IonItem
-                  className={
-                    location.pathname === appPage.url ? "selected" : ""
-                  }
+                  className={location.pathname === appPage.url ? "selected" : ""}
                   routerLink={appPage.url}
                   routerDirection="none"
                   lines="none"
@@ -105,15 +103,16 @@ const Menu = () => {
             );
           })}
         </IonList>
-        <IonList id="inbox-list">
-          <IonItem button fill="solid" lines="none" routerLink={"/"}>
-            <IonLabel color="danger">Cerrar Sesion</IonLabel>
+        <IonList>
+          <IonItem button fill="clear" lines="none" routerLink={"/"}>
             <IonIcon
               aria-hidden="true"
-              slot="end"
+              color="solid"
+              slot="start"
               ios={logOutOutline}
               md={logOut}
             />
+            <IonLabel color="danger">Cerrar Sesion</IonLabel>
           </IonItem>
         </IonList>
       </IonContent>

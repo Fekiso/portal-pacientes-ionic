@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { IonApp, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route, Switch } from "react-router-dom";
@@ -21,6 +22,7 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
+import "./theme/general.css";
 import LoginIonic from "./pages/Login/Login";
 import PageError from "./pages/PageError/PageError";
 

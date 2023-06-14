@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import "./PageError.css";
+import React, { useEffect, useState } from "react";
 import {
   IonCard,
   IonCardContent,
@@ -11,6 +10,7 @@ import {
   IonItem,
   IonRow,
   IonText,
+  IonThumbnail,
 } from "@ionic/react";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 import { useHistory } from "react-router";
@@ -64,7 +64,7 @@ const PageError = (props) => {
               </IonRow>
             </IonCardHeader>
             <IonCardContent>
-              <IonItem>
+              <IonItem className="amarillo-sol">
                 <IonIcon slot="start" size="large" color="danger" ios={alertOutline} md={alert} />
                 <IonText color="danger">
                   {(!usuario || motivo === "sesion perdida") && (

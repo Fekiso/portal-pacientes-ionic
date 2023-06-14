@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -21,7 +21,6 @@ import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplega
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
-import "./TurnosPaciente.css";
 
 export default function TurnosPaciente() {
   const [usuario, setUsuario] = useState({});
@@ -36,6 +35,7 @@ export default function TurnosPaciente() {
   const [filtroCancelados, setFiltroCancelados] = useState(-1);
   const [filtroAsistidos, setFiltroAsistidos] = useState(-1);
   const [listadoTurnos, setListadoTurnos] = useState([]);
+  const [listadoTurnosFiltrados, setListadoTurnosFiltrados] = useState([]);
   const [turnoSeleccionado, setTurnoSeleccionado] = useState({});
   const [abrirModalCancelarReserva, setAbrirModalCancelarReserva] = useState(false);
   const [cancelados, setCancelados] = useState([
@@ -314,7 +314,7 @@ export default function TurnosPaciente() {
         <IonGrid>
           <IonRow className="ion-justify-content-center">
             <IonCol>
-              <div class="ion-text-center">
+              <div className="ion-text-center">
                 <p>No tiene turnos registrados</p>
               </div>
             </IonCol>
@@ -325,14 +325,14 @@ export default function TurnosPaciente() {
           {/*Desplegable con filtros*/}
           <IonAccordionGroup expand="inset">
             <IonAccordion value={"a"}>
-              <IonItem slot="header" color="light">
+              <IonItem slot="header" color="light" className="amarillo-sol">
                 <IonLabel>Filtrar</IonLabel>
               </IonItem>
               <div slot="content">
                 <IonGrid>
                   <IonRow>
                     <IonCol size="12" size-md="6">
-                      <IonItem>
+                      <IonItem className="amarillo-sol">
                         <CustomDesplegable
                           array={especialidades}
                           value={especialidadSeleccionada}
@@ -346,7 +346,7 @@ export default function TurnosPaciente() {
                     </IonCol>
 
                     <IonCol size="12" size-md="6">
-                      <IonItem>
+                      <IonItem className="amarillo-sol">
                         <CustomDesplegable
                           array={listadoPrestadores}
                           value={prestadorSeleccionado}
@@ -361,7 +361,7 @@ export default function TurnosPaciente() {
                   </IonRow>
                   <IonRow>
                     <IonCol size="12" size-md="6">
-                      <IonItem>
+                      <IonItem className="amarillo-sol">
                         <CustomDesplegable
                           array={cancelados}
                           value={filtroCancelados}
@@ -375,7 +375,7 @@ export default function TurnosPaciente() {
                     </IonCol>
 
                     <IonCol size="12" size-md="6">
-                      <IonItem>
+                      <IonItem className="amarillo-sol">
                         <CustomDesplegable
                           array={asistidos}
                           value={filtroAsistidos}
@@ -396,7 +396,7 @@ export default function TurnosPaciente() {
           {/* Tabla */}
           <IonList lines="none">
             <IonGrid>
-              <IonItem className="fila cabecera">
+              <IonItem className="fila cabecera amarillo-sol">
                 <IonCol className="celda cabecera" size="2.5">
                   <p>Fecha</p>
                 </IonCol>
@@ -417,7 +417,7 @@ export default function TurnosPaciente() {
                 </IonCol>
               </IonItem>
               {FiltrarTurnos(listadoTurnos).map((fila) => (
-                <IonItem key={fila.nombre} className="fila">
+                <IonItem key={fila.nombre} className="fila amarillo-sol">
                   <IonCol className="celda" size="2.5">
                     <p>{`${dayjs(fila.fecha).format("DD/MM/YYYY")} ${dayjs(fila.hora).format(
                       "HH:MM"

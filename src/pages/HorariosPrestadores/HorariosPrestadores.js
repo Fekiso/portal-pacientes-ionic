@@ -3,9 +3,19 @@ import { useHistory } from "react-router";
 import axios from "axios";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
-import { IonCol, IonGrid, IonItem, IonList, IonRow } from "@ionic/react";
+import {
+  IonAccordion,
+  IonAccordionGroup,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonRow,
+} from "@ionic/react";
 
-import "./HorariosPrestadores.css";
+import { close, closeOutline } from "ionicons/icons";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import LoadingBackdrop from "../../components/LoadingBackdrop/LoadingBackdrop";
 import CustomToast from "../../components/CustomToast/CustomToast";
@@ -21,6 +31,7 @@ export default function HorariosPrestadores() {
   const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState(-1);
   const [prestadorSeleccionado, setPrestadorSeleccionado] = useState(-1);
   const [horario, setHorario] = useState([]);
+  const [horarios, setHorarios] = useState(null);
 
   const [toast, setToast] = useState({ open: false, mensaje: "", tipo: "" });
   const mostrarNotificacion = (abrir, mensaje, tipo) => {
@@ -65,7 +76,6 @@ export default function HorariosPrestadores() {
       );
     }
   };
-
   const traerHorariosEspecialidad = async (prestadores) => {
     let arrayHorarios = [];
     let arrayHorariosMostrar = [];
@@ -244,27 +254,13 @@ export default function HorariosPrestadores() {
                 />
               </IonItem>
             </IonCol>
-
-            {/* <IonCol size="12" size-md="6">
-              <IonItem>
-                <CustomDesplegable
-                  array={listadoPrestadores}
-                  value={prestadorSeleccionado}
-                  handleChange={handleChangeSelect}
-                  mostrarTodos={false}
-                  mostrarSearch={true}
-                  label={"Seleccione un prestador"}
-                  id="Prestador"
-                />
-              </IonItem>
-            </IonCol> */}
           </IonRow>
         </IonGrid>
 
         {/* Tabla por especialidad*/}
         <IonList lines="none">
           <IonGrid>
-            <IonItem className="fila cabecera">
+            <IonItem className="fila cabecera amarillo-sol">
               <IonCol className="celda cabecera">
                 <p>Prestador</p>
               </IonCol>
@@ -293,7 +289,7 @@ export default function HorariosPrestadores() {
             {horario.length > 0 &&
               horario.map((prestador) => (
                 <>
-                  <IonItem className="fila">
+                  <IonItem className="fila amarillo-sol">
                     <IonCol className="celda">{prestador.prestadorNom}</IonCol>
                     <IonCol className="celda">
                       <>
@@ -370,221 +366,6 @@ export default function HorariosPrestadores() {
               ))}
           </IonGrid>
         </IonList>
-
-        {/* Tabla por prestador*/}
-        {/* <IonList lines="none">
-          <IonGrid>
-            <IonItem className="fila cabecera">
-              <IonCol className="celda cabecera" size="2">
-                <p>Dia</p>
-              </IonCol>
-              <IonCol className="celda cabecera" size="5">
-                <p>Horarios</p>
-              </IonCol>
-              <IonCol className="celda cabecera" size="5">
-                <p>Virtual</p>
-              </IonCol>
-            </IonItem>
-            {horario ? (
-              <>
-                <IonItem className="fila">
-                  <IonCol className="celda" size="2">
-                    <p>Domingo</p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.domingoM === ""
-                        ? horario.domingoT === ""
-                          ? ""
-                          : horario.domingoT
-                        : horario.domingoM +
-                          (horario.domingoT === ""
-                            ? ""
-                            : " y " + horario.domingoT)}
-                    </p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.domMEsVirtual === 0
-                        ? horario.domTEsVirtual === 0
-                          ? "No"
-                          : "Tarde"
-                        : horario.domTEsVirtual === 0
-                        ? "Mañana"
-                        : "Mañana y tarde"}
-                    </p>
-                  </IonCol>
-                </IonItem>
-                <IonItem className="fila">
-                  <IonCol className="celda" size="2">
-                    <p>Lunes</p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.lunesM === ""
-                        ? horario.lunesT === ""
-                          ? ""
-                          : horario.lunesT
-                        : horario.lunesM +
-                          (horario.lunesT === "" ? "" : " y " + horario.lunesT)}
-                    </p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.lunMEsVirtual === 0
-                        ? horario.lunTEsVirtual === 0
-                          ? "No"
-                          : "Tarde"
-                        : horario.lunTEsVirtual === 0
-                        ? "Mañana"
-                        : "Mañana y tarde"}
-                    </p>
-                  </IonCol>
-                </IonItem>
-                <IonItem className="fila">
-                  <IonCol className="celda" size="2">
-                    <p>Martes</p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.martesM === ""
-                        ? horario.martesT === ""
-                          ? ""
-                          : horario.martesT
-                        : horario.martesM +
-                          (horario.martesT === ""
-                            ? ""
-                            : " y " + horario.martesT)}
-                    </p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.marMEsVirtual === 0
-                        ? horario.marTEsVirtual === 0
-                          ? "No"
-                          : "Tarde"
-                        : horario.marTEsVirtual === 0
-                        ? "Mañana"
-                        : "Mañana y tarde"}
-                    </p>
-                  </IonCol>
-                </IonItem>
-                <IonItem className="fila">
-                  <IonCol className="celda" size="2">
-                    <p>Miercoles</p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.miercolesM === ""
-                        ? horario.miercolesT === ""
-                          ? ""
-                          : horario.miercolesT
-                        : horario.miercolesM +
-                          (horario.miercolesT === ""
-                            ? ""
-                            : " y " + horario.miercolesT)}
-                    </p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.mieMEsVirtual === 0
-                        ? horario.mieTEsVirtual === 0
-                          ? "No"
-                          : "Tarde"
-                        : horario.mieTEsVirtual === 0
-                        ? "Mañana"
-                        : "Mañana y tarde"}
-                    </p>
-                  </IonCol>
-                </IonItem>
-                <IonItem className="fila">
-                  <IonCol className="celda" size="2">
-                    <p>Jueves</p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.juevesM === ""
-                        ? horario.juevesT === ""
-                          ? ""
-                          : horario.juevesT
-                        : horario.juevesM +
-                          (horario.juevesT === ""
-                            ? ""
-                            : " y " + horario.juevesT)}
-                    </p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.jueMEsVirtual === 0
-                        ? horario.jueTEsVirtual === 0
-                          ? "No"
-                          : "Tarde"
-                        : horario.jueTEsVirtual === 0
-                        ? "Mañana"
-                        : "Mañana y tarde"}
-                    </p>
-                  </IonCol>
-                </IonItem>
-                <IonItem className="fila">
-                  <IonCol className="celda" size="2">
-                    <p>Viernes</p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.viernesM === ""
-                        ? horario.viernesT === ""
-                          ? ""
-                          : horario.viernesT
-                        : horario.viernesM +
-                          (horario.viernesT === ""
-                            ? ""
-                            : " y " + horario.viernesT)}
-                    </p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.vieMEsVirtual === 0
-                        ? horario.vieTEsVirtual === 0
-                          ? "No"
-                          : "Tarde"
-                        : horario.vieTEsVirtual === 0
-                        ? "Mañana"
-                        : "Mañana y tarde"}
-                    </p>
-                  </IonCol>
-                </IonItem>
-                <IonItem className="fila">
-                  <IonCol className="celda" size="2">
-                    <p>Sabado</p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.sabadoM === ""
-                        ? horario.sabadoT === ""
-                          ? ""
-                          : horario.sabadoT
-                        : horario.sabadoM +
-                          (horario.sabadoT === ""
-                            ? ""
-                            : " y " + horario.sabadoT)}
-                    </p>
-                  </IonCol>
-                  <IonCol className="celda" size="5">
-                    <p>
-                      {horario.sabMEsVirtual === 0
-                        ? horario.sabTEsVirtual === 0
-                          ? "No"
-                          : "Tarde"
-                        : horario.sabTEsVirtual === 0
-                        ? "Mañana"
-                        : "Mañana y tarde"}
-                    </p>
-                  </IonCol>
-                </IonItem>
-              </>
-            ) : null}
-          </IonGrid>
-        </IonList> */}
       </div>
 
       <CustomToast

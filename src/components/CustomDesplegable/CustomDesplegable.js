@@ -1,4 +1,6 @@
 import {
+  IonAlert,
+  IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
@@ -8,10 +10,12 @@ import {
   IonList,
   IonModal,
   IonSearchbar,
+  IonSelect,
+  IonSelectOption,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { radioButtonOffOutline, radioButtonOnOutline } from "ionicons/icons";
+import { radioButtonOff, radioButtonOffOutline, radioButtonOnOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import StyledButton from "../StyledButton/StyledButton";
 
@@ -27,6 +31,7 @@ const CustomDesplegable = ({
   const [isOpen, setIsOpen] = useState(false);
   const [texto, setTexto] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [options, setOptions] = useState(false);
   const [opcionesValidas, setOpcionesValidas] = useState([]);
 
   const onHandleChange = (value, textLabel) => {
@@ -42,9 +47,38 @@ const CustomDesplegable = ({
     setSearchText(texto);
   };
 
+  const cargarInputs = () => {
+    const arrayInputs = [];
+
+    if (mostrarTodos) {
+      arrayInputs.push({
+        label: "Mostrar todos",
+        type: "radio",
+        value: -1,
+        checked: -1 === value && mostrarTodos,
+        handler: (target) => onHandleChange(target.value, target.label),
+      });
+    }
+
+    array.forEach((item) => {
+      arrayInputs.push({
+        label: item.text,
+        type: "radio",
+        value: item.codigo,
+        checked: item.codigo === value,
+        handler: (target) => onHandleChange(target.value, target.label),
+      });
+    });
+
+    return arrayInputs;
+  };
+
   useEffect(() => {
     if (isOpen) {
       setOpcionesValidas(array);
+    }
+    if (texto === "" || (value === -1 && !mostrarTodos)) {
+      // setTexto("Seleccione una opcion");
     }
   }, [isOpen]);
 
@@ -78,6 +112,7 @@ const CustomDesplegable = ({
                 value={-1}
                 button
                 onClick={({ target }) => onHandleChange(-1, "Mostrar todos")}
+                className="amarillo-sol"
               >
                 <IonLabel>Mostrar todos</IonLabel>
                 <IonIcon
@@ -93,6 +128,7 @@ const CustomDesplegable = ({
                 value={item.codigo}
                 button
                 onClick={(target) => onHandleChange(item.codigo, item.text)}
+                className="amarillo-sol"
               >
                 <IonLabel>{item.text}</IonLabel>
                 <IonIcon

@@ -1,22 +1,33 @@
 import {
+  IonAlert,
+  IonButton,
+  IonButtons,
+  IonCard,
+  IonCardHeader,
+  IonCol,
   IonContent,
+  IonDatetime,
+  IonDatetimeButton,
   IonFooter,
   IonHeader,
   IonIcon,
   IonInput,
   IonItem,
+  IonLabel,
   IonList,
+  IonListHeader,
   IonModal,
   IonNote,
   IonPopover,
   IonRow,
   IonTitle,
+  IonToast,
   IonToolbar,
 } from "@ionic/react";
 import axios from "axios";
 import dayjs from "dayjs";
-import { alert, alertOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { alert, alertOutline, closeOutline } from "ionicons/icons";
+import React, { useEffect, useState } from "react";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import CustomToast from "../../components/CustomToast/CustomToast";
 import DialogoConfirmacion from "../../components/DialogoConfirmacion/DialogoConfirmacion";
@@ -301,7 +312,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorNombre" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso el nombre</IonContent>
+                  <IonContent className="ion-padding">No se ingreso el nombre</IonContent>
                 </IonPopover>
               </>
             )}
@@ -326,7 +337,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorApellido" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso el apellido</IonContent>
+                  <IonContent className="ion-padding">No se ingreso el apellido</IonContent>
                 </IonPopover>
               </>
             )}
@@ -355,7 +366,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorFechaNac" triggerAction="click">
-                  <IonContent class="ion-padding">
+                  <IonContent className="ion-padding">
                     No se ingreso una fecha de nacimiento valida
                   </IonContent>
                 </IonPopover>
@@ -388,7 +399,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorTipoDoc" triggerAction="click">
-                  <IonContent class="ion-padding">No se selecciono un tipo de documento</IonContent>
+                  <IonContent className="ion-padding">
+                    No se selecciono un tipo de documento
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -414,7 +427,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorNroDocumento" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso un numero de documento</IonContent>
+                  <IonContent className="ion-padding">
+                    No se ingreso un numero de documento
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -447,7 +462,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorMutual" triggerAction="click">
-                  <IonContent class="ion-padding">No se selecciono una mutual</IonContent>
+                  <IonContent className="ion-padding">No se selecciono una mutual</IonContent>
                 </IonPopover>
               </>
             )}
@@ -472,7 +487,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorMutualAfiliado" triggerAction="click">
-                  <IonContent class="ion-padding">
+                  <IonContent className="ion-padding">
                     No se ingreso un numero de afiliado, en caso de no tener
                   </IonContent>
                 </IonPopover>
@@ -502,7 +517,9 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorTelefono" triggerAction="click">
-                  <IonContent class="ion-padding">No se ingreso un telefono de contacto</IonContent>
+                  <IonContent className="ion-padding">
+                    No se ingreso un telefono de contacto
+                  </IonContent>
                 </IonPopover>
               </>
             )}
@@ -527,7 +544,7 @@ const NuevoPaciente = ({ openModal, closeModal, mostrarNotificacion }) => {
                   color="danger"
                 />
                 <IonPopover trigger="btnErrorCorreo" triggerAction="click">
-                  <IonContent class="ion-padding">
+                  <IonContent className="ion-padding">
                     No se ingreso un correo electronico valido
                   </IonContent>
                 </IonPopover>

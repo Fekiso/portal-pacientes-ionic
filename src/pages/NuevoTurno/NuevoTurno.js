@@ -13,7 +13,7 @@ import {
   IonRow,
 } from "@ionic/react";
 
-import "./NuevoTurno.css";
+import { close, closeOutline } from "ionicons/icons";
 import CustomDesplegable from "../../components/CustomDesplegable/CustomDesplegable";
 import StyledButton from "../../components/StyledButton/StyledButton";
 import CustomToast from "../../components/CustomToast/CustomToast";
@@ -542,7 +542,7 @@ export default function NuevoTurno() {
         <IonGrid>
           <IonRow>
             <IonCol size="12" size-md="6">
-              <IonItem>
+              <IonItem className="amarillo-sol">
                 <CustomDesplegable
                   array={especialidades}
                   value={especialidadSeleccionada}
@@ -556,7 +556,7 @@ export default function NuevoTurno() {
             </IonCol>
 
             <IonCol size="12" size-md="6">
-              <IonItem>
+              <IonItem className="amarillo-sol">
                 <CustomDesplegable
                   array={listadoPrestadores}
                   value={prestadorSeleccionado}
